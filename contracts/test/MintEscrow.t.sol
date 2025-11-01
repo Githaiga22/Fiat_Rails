@@ -157,4 +157,76 @@ contract MintEscrowTest is Test {
         assertEq(intent1.amount, 100e18);
         assertEq(intent2.amount, 200e18);
     }
+
+    // ============ executeMint Tests ============
+
+    function testExecuteMint() public {
+        registry.updateUser(alice, 50, keccak256("KYC"), true);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        uint256 aliceTokenBalanceBefore = countryToken.balanceOf(alice);
+
+        vm.prank(executor);
+        escrow.executeMint(intentId);
+
+        assertEq(countryToken.balanceOf(alice), aliceTokenBalanceBefore + 100e18);
+        assertEq(uint256(escrow.getIntentStatus(intentId)), uint256(IMintEscrow.MintStatus.Executed));
+    }
+
+    function testExecuteMintEmitsEvent() public {
+        registry.updateUser(alice, 50, keccak256("KYC"), true);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(executor);
+        vm.expectEmit(true, true, true, true);
+        emit MintExecuted(intentId, alice, 100e18, COUNTRY_CODE, TX_REF_1);
+
+        escrow.executeMint(intentId);
+    }
+
+    function testExecuteMintRequiresExecutorRole() public {
+        registry.updateUser(alice, 50, keccak256("KYC"), true);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(alice);
+        vm.expectRevert();
+        escrow.executeMint(intentId);
+    }
+
+    function testExecuteMintRevertsNonCompliantUser() public {
+        registry.updateUser(alice, 90, keccak256("KYC"), true);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(executor);
+        vm.expectRevert(IMintEscrow.UserNotCompliant.selector);
+        escrow.executeMint(intentId);
+    }
+
+    function testExecuteMintRevertsIntentNotFound() public {
+        vm.prank(executor);
+        vm.expectRevert(IMintEscrow.IntentNotFound.selector);
+        escrow.executeMint(bytes32("nonexistent"));
+    }
+
+    function testExecuteMintRevertsAlreadyExecuted() public {
+        registry.updateUser(alice, 50, keccak256("KYC"), true);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(executor);
+        escrow.executeMint(intentId);
+
+        vm.prank(executor);
+        vm.expectRevert(IMintEscrow.IntentAlreadyExecuted.selector);
+        escrow.executeMint(intentId);
+    }
 }
