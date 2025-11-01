@@ -37,4 +37,39 @@ contract MintEscrow is IMintEscrow, AccessControl, ReentrancyGuard {
         userRegistry = UserRegistry(_userRegistry);
         countryCode = _countryCode;
     }
+
+    /**
+     * @notice Submit mint intent and deposit USD
+     * @param amount Amount of USD to deposit
+     * @param _countryCode Target country code
+     * @param txRef Off-chain transaction reference
+     * @return intentId Unique intent identifier
+     */
+    function submitIntent(
+        uint256 amount,
+        bytes32 _countryCode,
+        bytes32 txRef
+    ) external nonReentrant returns (bytes32 intentId) {
+        if (amount == 0) revert InvalidAmount();
+        if (_countryCode != countryCode) revert InvalidCountryCode();
+
+        intentId = keccak256(abi.encodePacked(msg.sender, txRef, block.timestamp));
+
+        if (intents[intentId].timestamp != 0) revert IntentAlreadyExists();
+
+        intents[intentId] = MintIntent({
+            user: msg.sender,
+            amount: amount,
+            countryCode: _countryCode,
+            txRef: txRef,
+            timestamp: block.timestamp,
+            status: MintStatus.Pending
+        });
+
+        if (!usdStablecoin.transferFrom(msg.sender, address(this), amount)) {
+            revert TransferFailed();
+        }
+
+        emit MintIntentSubmitted(intentId, msg.sender, amount, _countryCode, txRef);
+    }
 }
