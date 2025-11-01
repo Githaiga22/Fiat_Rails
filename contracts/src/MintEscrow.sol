@@ -72,4 +72,25 @@ contract MintEscrow is IMintEscrow, AccessControl, ReentrancyGuard {
 
         emit MintIntentSubmitted(intentId, msg.sender, amount, _countryCode, txRef);
     }
+
+    /**
+     * @notice Execute mint for compliant user
+     * @param intentId Intent to execute
+     */
+    function executeMint(bytes32 intentId) external onlyRole(EXECUTOR_ROLE) nonReentrant {
+        MintIntent storage intent = intents[intentId];
+
+        if (intent.timestamp == 0) revert IntentNotFound();
+        if (intent.status != MintStatus.Pending) revert IntentAlreadyExecuted();
+
+        if (!userRegistry.isCompliant(intent.user)) {
+            revert UserNotCompliant();
+        }
+
+        intent.status = MintStatus.Executed;
+
+        countryToken.mint(intent.user, intent.amount);
+
+        emit MintExecuted(intentId, intent.user, intent.amount, intent.countryCode, intent.txRef);
+    }
 }
