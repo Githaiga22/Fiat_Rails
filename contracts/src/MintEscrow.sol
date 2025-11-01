@@ -113,4 +113,38 @@ contract MintEscrow is IMintEscrow, AccessControl, ReentrancyGuard {
 
         emit MintRefunded(intentId, intent.user, intent.amount, reason);
     }
+
+    /**
+     * @notice Get intent details
+     * @param intentId Intent identifier
+     * @return MintIntent struct
+     */
+    function getIntent(bytes32 intentId) external view returns (MintIntent memory) {
+        return intents[intentId];
+    }
+
+    /**
+     * @notice Get intent status
+     * @param intentId Intent identifier
+     * @return status Current status
+     */
+    function getIntentStatus(bytes32 intentId) external view returns (MintStatus) {
+        return intents[intentId].status;
+    }
+
+    /**
+     * @notice Set UserRegistry address (admin only)
+     * @param registry UserRegistry address
+     */
+    function setUserRegistry(address registry) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        userRegistry = UserRegistry(registry);
+    }
+
+    /**
+     * @notice Set stablecoin address (admin only)
+     * @param token Stablecoin address
+     */
+    function setStablecoin(address token) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        usdStablecoin = IERC20(token);
+    }
 }
