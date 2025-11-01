@@ -17,7 +17,9 @@ contract ComplianceManagerTest is Test {
     ERC1967Proxy public proxy;
 
     address public admin;
+    address public complianceOfficer;
     address public alice;
+    address public bob;
 
     bytes32 public constant COMPLIANCE_OFFICER = keccak256("COMPLIANCE_OFFICER");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
@@ -31,7 +33,9 @@ contract ComplianceManagerTest is Test {
 
     function setUp() public {
         admin = address(this);
+        complianceOfficer = makeAddr("complianceOfficer");
         alice = makeAddr("alice");
+        bob = makeAddr("bob");
 
         registry = new UserRegistry();
         registry.addComplianceOfficer(address(this));
@@ -137,5 +141,95 @@ contract ComplianceManagerTest is Test {
         manager.recordAttestation(alice, TEST_ATTESTATION, ATTESTATION_TYPE_KYC);
 
         assertEq(registry.getRiskScore(alice), 50);
+    }
+
+    // ============ isCompliant Tests ============
+
+    function testIsCompliantDelegatesToRegistry() public {
+        registry.updateUser(alice, 50, TEST_ATTESTATION, true);
+
+        assertTrue(manager.isCompliant(alice));
+    }
+
+    function testIsCompliantReturnsFalseForNonCompliant() public {
+        registry.updateUser(alice, 90, TEST_ATTESTATION, true);
+
+        assertFalse(manager.isCompliant(alice));
+    }
+
+    // ============ Pause/Unpause Tests ============
+
+    function testPauseRequiresAdmin() public {
+        vm.prank(alice);
+        vm.expectRevert();
+        manager.pause();
+    }
+
+    function testUnpauseRequiresAdmin() public {
+        manager.pause();
+
+        vm.prank(alice);
+        vm.expectRevert();
+        manager.unpause();
+    }
+
+    function testPauseBlocksOperations() public {
+        manager.pause();
+
+        vm.expectRevert();
+        manager.updateUserRisk(alice, 50);
+
+        vm.expectRevert();
+        manager.recordAttestation(alice, TEST_ATTESTATION, ATTESTATION_TYPE_KYC);
+    }
+
+    function testUnpauseRestoresOperations() public {
+        manager.pause();
+        manager.unpause();
+
+        registry.updateUser(alice, 50, TEST_ATTESTATION, true);
+        manager.updateUserRisk(alice, 60);
+
+        assertEq(registry.getRiskScore(alice), 60);
+    }
+
+    // ============ Upgrade Tests ============
+
+    function testUpgradeRequiresUpgraderRole() public {
+        ComplianceManager newImpl = new ComplianceManager();
+
+        vm.prank(alice);
+        vm.expectRevert();
+        manager.upgradeToAndCall(address(newImpl), "");
+    }
+
+    function testUpgradeWithUpgraderRole() public {
+        ComplianceManager newImpl = new ComplianceManager();
+
+        manager.upgradeToAndCall(address(newImpl), "");
+
+        assertEq(manager.MAX_RISK_SCORE(), 83);
+    }
+
+    // ============ Role Management Tests ============
+
+    function testGrantComplianceOfficerRole() public {
+        manager.grantRole(COMPLIANCE_OFFICER, complianceOfficer);
+
+        registry.updateUser(alice, 50, TEST_ATTESTATION, true);
+
+        vm.prank(complianceOfficer);
+        manager.updateUserRisk(alice, 60);
+
+        assertEq(registry.getRiskScore(alice), 60);
+    }
+
+    function testRevokeComplianceOfficerRole() public {
+        manager.grantRole(COMPLIANCE_OFFICER, complianceOfficer);
+        manager.revokeRole(COMPLIANCE_OFFICER, complianceOfficer);
+
+        vm.prank(complianceOfficer);
+        vm.expectRevert();
+        manager.updateUserRisk(alice, 50);
     }
 }
