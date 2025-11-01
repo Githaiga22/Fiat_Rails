@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin-upgradeable/contracts/access/AccessControlUpgradeable.sol";
+import "@openzeppelin-upgradeable/contracts/utils/PausableUpgradeable.sol";
+import "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
+import "../IComplianceManager.sol";
+import "./UserRegistry.sol";
+
+/**
+ * @title ComplianceManager
+ * @notice Core compliance orchestrator for FiatRails with upgradeability
+ * @dev Implements UUPS upgradeability pattern with role-based access control
+ *
+ * Architecture Decision (ADR-001):
+ * - Chosen: UUPS (Universal Upgradeable Proxy Standard)
+ * - Rationale: Lower gas costs, upgrade logic in implementation contract
+ * - Trade-off: Higher risk if upgrade logic is buggy (mitigated by _authorizeUpgrade)
+ *
+ * Roles:
+ * - DEFAULT_ADMIN_ROLE: Can grant/revoke other roles
+ * - COMPLIANCE_OFFICER: Can update user risk scores and attestations
+ * - UPGRADER_ROLE: Can upgrade contract implementation
+ *
+ * Security:
+ * - Pausable for emergency stops
+ * - Role separation (admin ≠ upgrader ≠ compliance officer)
+ * - Upgrade authorization restricted to UPGRADER_ROLE
+ *
+ * @custom:oz-upgrades-from No previous version (initial deployment)
+ */
+contract ComplianceManager is
+    Initializable,
+    AccessControlUpgradeable,
+    PausableUpgradeable,
+    UUPSUpgradeable,
+    IComplianceManager
+{
+    /// @notice Role for compliance officers who manage user risk and attestations
+    bytes32 public constant COMPLIANCE_OFFICER = keccak256("COMPLIANCE_OFFICER");
+
+    /// @notice Role for addresses authorized to upgrade the contract
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+
+    /// @notice Reference to UserRegistry contract for compliance data storage
+    UserRegistry public userRegistry;
+
+    /// @notice Maximum acceptable risk score from seed.json
+    uint8 public constant MAX_RISK_SCORE = 83;
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        // Disable initializers in implementation contract
+        // This prevents anyone from calling initialize() on the implementation
+        _disableInitializers();
+    }
+
+    /**
+     * @notice Initialize the contract (replaces constructor for upgradeable contracts)
+     * @param admin Address to receive admin, compliance officer, and upgrader roles
+     * @param _userRegistry Address of the UserRegistry contract
+     *
+     * @dev Can only be called once due to initializer modifier
+     *      Grants all roles to admin for initial setup
+     */
+    function initialize(address admin, address _userRegistry) public initializer {
+        __AccessControl_init();
+        __Pausable_init();
+        __UUPSUpgradeable_init();
+
+        // Grant roles to admin
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(COMPLIANCE_OFFICER, admin);
+        _grantRole(UPGRADER_ROLE, admin);
+
+        // Set user registry reference
+        userRegistry = UserRegistry(_userRegistry);
+    }
+
+    // Implementation continues in next commit...
+}

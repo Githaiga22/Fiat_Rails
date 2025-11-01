@@ -6,20 +6,8 @@ import "../IUserRegistry.sol";
 
 /**
  * @title UserRegistry
- * @notice Stores user compliance data including risk scores and attestation hashes
- * @dev Implements IUserRegistry interface with role-based access control
- *
- * Compliance Configuration from seed.json:
- * - Max Risk Score: 83 (0-83 acceptable, >83 non-compliant)
- * - Require Attestation: true
- * - Min Attestation Age: 0 seconds
- *
- * Security:
- * - Only COMPLIANCE_OFFICER_ROLE can update user data
- * - Public read access for compliance checks
- * - Events emitted for all updates (audit trail)
- *
- * @custom:security-contact security@fiatrails.io
+ * @notice Stores user compliance data with risk scores and attestations
+ * @dev COMPLIANCE_OFFICER_ROLE required for writes. Max risk score: 83 (from seed.json)
  */
 contract UserRegistry is IUserRegistry, AccessControl {
     /// @notice Role identifier for compliance officers who can update user data
@@ -31,31 +19,17 @@ contract UserRegistry is IUserRegistry, AccessControl {
     /// @notice Mapping from user address to their compliance data
     mapping(address => UserCompliance) private users;
 
-    /**
-     * @notice Initialize the registry with admin role
-     * @dev Grants DEFAULT_ADMIN_ROLE to deployer
-     *      Admin must explicitly grant COMPLIANCE_OFFICER_ROLE to authorized addresses
-     */
+    /// @notice Grants deployer DEFAULT_ADMIN_ROLE
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /**
-     * @notice Register or update a user's compliance data
+     * @notice Update user compliance data (requires COMPLIANCE_OFFICER_ROLE)
      * @param user Address of the user
-     * @param riskScore Risk score (0-100 scale, 0 = lowest risk)
-     * @param attestationHash Hash of compliance documentation or ZK proof
-     * @param isVerified Whether user has completed KYC verification
-     *
-     * @dev Requirements:
-     * - Only callable by COMPLIANCE_OFFICER_ROLE
-     * - Risk score must be ≤ 100
-     * - Emits UserComplianceUpdated event
-     *
-     * Security considerations:
-     * - Attestation hash should be hash of signed document or ZK proof
-     * - Risk score calculated off-chain based on compliance checks
-     * - lastUpdated timestamp prevents stale compliance data
+     * @param riskScore Risk score (0-100)
+     * @param attestationHash Hash of compliance documentation
+     * @param isVerified KYC verification status
      */
     function updateUser(
         address user,
@@ -63,12 +37,10 @@ contract UserRegistry is IUserRegistry, AccessControl {
         bytes32 attestationHash,
         bool isVerified
     ) external onlyRole(COMPLIANCE_OFFICER_ROLE) {
-        // Validate risk score is within acceptable range (0-100)
         if (riskScore > 100) {
             revert InvalidRiskScore();
         }
 
-        // Update user compliance data
         users[user] = UserCompliance({
             riskScore: riskScore,
             attestationHash: attestationHash,
@@ -76,50 +48,34 @@ contract UserRegistry is IUserRegistry, AccessControl {
             isVerified: isVerified
         });
 
-        // Emit event for off-chain indexing and audit trail
         emit UserComplianceUpdated(user, riskScore, attestationHash, isVerified);
     }
 
     /**
      * @notice Get user compliance data
      * @param user Address to query
-     * @return UserCompliance struct with all compliance data
-     *
-     * @dev Returns default struct (all zeros) if user not registered
-     *      Check isVerified or lastUpdated to determine if user exists
+     * @return UserCompliance struct (returns default struct if user not registered)
      */
     function getUser(address user) external view returns (UserCompliance memory) {
         return users[user];
     }
 
     /**
-     * @notice Check if user is compliant for minting operations
+     * @notice Check if user meets compliance requirements
      * @param user Address to check
-     * @return bool True if user meets all compliance requirements
-     *
-     * @dev Compliance requirements (from seed.json):
-     * 1. User must be verified (isVerified == true)
-     * 2. Risk score must be ≤ MAX_RISK_SCORE (83)
-     * 3. Must have attestation hash (non-zero) since requireAttestation == true
-     *
-     * Note: This is the critical function used by MintEscrow before executing mints
+     * @return bool True if verified, risk score ≤ 83, and has attestation
      */
     function isCompliant(address user) external view returns (bool) {
         UserCompliance memory compliance = users[user];
-
-        // Check all compliance requirements
-        return compliance.isVerified && // Must be KYC verified
-            compliance.riskScore <= MAX_RISK_SCORE && // Risk within acceptable range
-            compliance.attestationHash != bytes32(0); // Must have attestation
+        return compliance.isVerified &&
+            compliance.riskScore <= MAX_RISK_SCORE &&
+            compliance.attestationHash != bytes32(0);
     }
 
     /**
-     * @notice Get user's current risk score
+     * @notice Get user's risk score
      * @param user Address to query
-     * @return uint8 Risk score (0-100)
-     *
-     * @dev Returns 0 if user not registered
-     *      Use getUser() to check if user exists (lastUpdated > 0)
+     * @return uint8 Risk score (0 if not registered)
      */
     function getRiskScore(address user) external view returns (uint8) {
         return users[user].riskScore;
@@ -128,41 +84,32 @@ contract UserRegistry is IUserRegistry, AccessControl {
     /**
      * @notice Get user's attestation hash
      * @param user Address to query
-     * @return bytes32 Attestation hash (hash of compliance documents or ZK proof)
-     *
-     * @dev Returns bytes32(0) if user not registered or no attestation provided
-     *      Attestation hash is used to link on-chain compliance to off-chain documents
+     * @return bytes32 Attestation hash
      */
     function getAttestationHash(address user) external view returns (bytes32) {
         return users[user].attestationHash;
     }
 
     /**
-     * @notice Grant COMPLIANCE_OFFICER_ROLE to an address
-     * @param officer Address to grant compliance officer permissions
-     * @dev Only callable by admin
-     *      Compliance officers can update user risk scores and attestations
+     * @notice Grant COMPLIANCE_OFFICER_ROLE (admin only)
+     * @param officer Address to grant role
      */
     function addComplianceOfficer(address officer) external onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(COMPLIANCE_OFFICER_ROLE, officer);
     }
 
     /**
-     * @notice Revoke COMPLIANCE_OFFICER_ROLE from an address
-     * @param officer Address to revoke compliance officer permissions from
-     * @dev Only callable by admin
-     *      Used for role rotation or security incidents
+     * @notice Revoke COMPLIANCE_OFFICER_ROLE (admin only)
+     * @param officer Address to revoke role
      */
     function removeComplianceOfficer(address officer) external onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(COMPLIANCE_OFFICER_ROLE, officer);
     }
 
     /**
-     * @notice Check if user has been registered
+     * @notice Check if user is registered
      * @param user Address to check
-     * @return bool True if user has been registered (lastUpdated > 0)
-     *
-     * @dev Helper function to distinguish between non-existent and zero-risk users
+     * @return bool True if lastUpdated > 0
      */
     function isRegistered(address user) external view returns (bool) {
         return users[user].lastUpdated > 0;
