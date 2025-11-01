@@ -32,3 +32,14 @@ FiatRails enables secure, compliant conversion of fiat currency to country-speci
                      │   Grafana    │
                      └──────────────┘
 ```
+
+
+## Features
+
+### Smart Contracts
+
+- **ComplianceManager**: Upgradeable (UUPS) contract with emergency pause functionality
+- **UserRegistry**: Risk scoring (0-100) and attestation management
+- **MintEscrow**: Idempotent minting with automatic compliance verification
+- **CountryToken**: ERC20 token representing country-specific stablecoin
+- **USDStablecoin**: Mock USDC for testing
