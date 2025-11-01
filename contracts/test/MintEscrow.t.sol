@@ -296,4 +296,121 @@ contract MintEscrowTest is Test {
         vm.expectRevert(IMintEscrow.IntentAlreadyExecuted.selector);
         escrow.refundIntent(intentId, "second refund");
     }
+
+    // ============ Integration Tests ============
+
+    function testFullMintFlow() public {
+        registry.updateUser(alice, 50, keccak256("KYC"), true);
+
+        uint256 aliceUsdBefore = usd.balanceOf(alice);
+        uint256 aliceTokenBefore = countryToken.balanceOf(alice);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        assertEq(usd.balanceOf(alice), aliceUsdBefore - 100e18);
+
+        vm.prank(executor);
+        escrow.executeMint(intentId);
+
+        assertEq(countryToken.balanceOf(alice), aliceTokenBefore + 100e18);
+        assertEq(uint256(escrow.getIntentStatus(intentId)), uint256(IMintEscrow.MintStatus.Executed));
+    }
+
+    function testFullRefundFlow() public {
+        uint256 aliceUsdBefore = usd.balanceOf(alice);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        assertEq(usd.balanceOf(alice), aliceUsdBefore - 100e18);
+
+        vm.prank(executor);
+        escrow.refundIntent(intentId, "User failed KYC");
+
+        assertEq(usd.balanceOf(alice), aliceUsdBefore);
+        assertEq(uint256(escrow.getIntentStatus(intentId)), uint256(IMintEscrow.MintStatus.Refunded));
+    }
+
+    function testMultipleMints() public {
+        registry.updateUser(alice, 50, keccak256("KYC"), true);
+        registry.updateUser(bob, 40, keccak256("KYC"), true);
+
+        vm.prank(alice);
+        bytes32 intentId1 = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(bob);
+        bytes32 intentId2 = escrow.submitIntent(200e18, COUNTRY_CODE, TX_REF_2);
+
+        vm.prank(executor);
+        escrow.executeMint(intentId1);
+
+        vm.prank(executor);
+        escrow.executeMint(intentId2);
+
+        assertEq(countryToken.balanceOf(alice), 100e18);
+        assertEq(countryToken.balanceOf(bob), 200e18);
+    }
+
+    // ============ Admin Function Tests ============
+
+    function testSetUserRegistry() public {
+        UserRegistry newRegistry = new UserRegistry();
+
+        escrow.setUserRegistry(address(newRegistry));
+
+        assertEq(address(escrow.userRegistry()), address(newRegistry));
+    }
+
+    function testSetUserRegistryRequiresAdmin() public {
+        UserRegistry newRegistry = new UserRegistry();
+
+        vm.prank(alice);
+        vm.expectRevert();
+        escrow.setUserRegistry(address(newRegistry));
+    }
+
+    function testSetStablecoin() public {
+        USDStablecoin newUsd = new USDStablecoin();
+
+        escrow.setStablecoin(address(newUsd));
+
+        assertEq(address(escrow.usdStablecoin()), address(newUsd));
+    }
+
+    function testSetStablecoinRequiresAdmin() public {
+        USDStablecoin newUsd = new USDStablecoin();
+
+        vm.prank(alice);
+        vm.expectRevert();
+        escrow.setStablecoin(address(newUsd));
+    }
+
+    // ============ Fuzz Tests ============
+
+    function testFuzzSubmitIntent(uint256 amount) public {
+        vm.assume(amount > 0 && amount <= 10000e18);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(amount, COUNTRY_CODE, TX_REF_1);
+
+        IMintEscrow.MintIntent memory intent = escrow.getIntent(intentId);
+        assertEq(intent.amount, amount);
+        assertEq(intent.user, alice);
+    }
+
+    function testFuzzExecuteMint(uint256 amount, uint8 riskScore) public {
+        vm.assume(amount > 0 && amount <= 10000e18);
+        vm.assume(riskScore <= 83);
+
+        registry.updateUser(alice, riskScore, keccak256("KYC"), true);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(amount, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(executor);
+        escrow.executeMint(intentId);
+
+        assertEq(countryToken.balanceOf(alice), amount);
+    }
 }
