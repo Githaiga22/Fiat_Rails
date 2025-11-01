@@ -1,0 +1,72 @@
+# Prometheus Configuration for FiatRails
+# 
+# Metrics to collect:
+# - RPC error rate
+# - p95 latency
+# - Queue depth (DLQ)
+# - Request throughput
+# - Idempotency hit rate
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'fiatrails-local'
+    environment: 'production-trial'
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+          # - alertmanager:9093
+
+# Load alert rules
+rule_files:
+  - "alerts.yml"
+
+# Scrape configurations
+scrape_configs:
+  # FiatRails API metrics
+  - job_name: 'fiatrails-api'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Anvil node metrics (if exposed)
+  - job_name: 'anvil'
+    static_configs:
+      - targets: ['anvil:8545']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+# Example metrics candidates should expose:
+#
+# # RPC operations
+# fiatrails_rpc_requests_total{method, status}
+# fiatrails_rpc_duration_seconds{method, quantile}
+# fiatrails_rpc_errors_total{method, error_type}
+# 
+# # API requests
+# fiatrails_http_requests_total{method, path, status}
+# fiatrails_http_duration_seconds{method, path, quantile}
+# 
+# # Business metrics
+# fiatrails_mint_intents_total{status}
+# fiatrails_callbacks_total{source, status}
+# fiatrails_idempotency_hits_total
+# 
+# # Queue metrics
+# fiatrails_dlq_depth
+# fiatrails_dlq_items_total
+# fiatrails_retry_attempts_total{operation}
+# 
+# # Compliance checks
+# fiatrails_compliance_checks_total{result}
+

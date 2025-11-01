@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+out/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Foundry
+cache/
+artifacts/
+broadcast/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# DLQ and logs
+dlq/
+logs/
+*.log
+
+# Secrets
+*.pem
+*.key
+*_secret.txt
+deployments.json
+
+# Test coverage
+coverage/
+coverage.json
+lcov.info
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Docker
+.docker/
+
+# Prometheus & Grafana data
+prometheus_data/
+grafana_data/

@@ -1,0 +1,113 @@
+# Prometheus Alert Rules for FiatRails
+# 
+# Candidates should define meaningful SLOs and alert thresholds
+
+groups:
+  - name: fiatrails_api
+    interval: 30s
+    rules:
+      # High error rate on RPC calls
+      - alert: HighRPCErrorRate
+        expr: |
+          (
+            rate(fiatrails_rpc_errors_total[5m])
+            /
+            rate(fiatrails_rpc_requests_total[5m])
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          component: rpc
+        annotations:
+          summary: "RPC error rate above 5%"
+          description: "{{ $value | humanizePercentage }} of RPC calls failing"
+
+      # RPC latency degradation
+      - alert: SlowRPCCalls
+        expr: |
+          histogram_quantile(0.95,
+            rate(fiatrails_rpc_duration_seconds_bucket[5m])
+          ) > 2.0
+        for: 5m
+        labels:
+          severity: warning
+          component: rpc
+        annotations:
+          summary: "p95 RPC latency above 2s"
+          description: "RPC calls taking {{ $value }}s at p95"
+
+      # Dead-letter queue growing
+      - alert: DLQGrowing
+        expr: fiatrails_dlq_depth > 10
+        for: 5m
+        labels:
+          severity: critical
+          component: queue
+        annotations:
+          summary: "Dead-letter queue has {{ $value }} items"
+          description: "DLQ indicates persistent failures"
+
+      # API endpoint errors
+      - alert: HighAPIErrorRate
+        expr: |
+          (
+            sum(rate(fiatrails_http_requests_total{status=~"5.."}[5m]))
+            /
+            sum(rate(fiatrails_http_requests_total[5m]))
+          ) > 0.01
+        for: 3m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "API error rate above 1%"
+          description: "{{ $value | humanizePercentage }} of requests failing"
+
+      # Compliance check failures
+      - alert: HighComplianceCheckFailures
+        expr: |
+          rate(fiatrails_compliance_checks_total{result="failed"}[10m]) > 0.5
+        for: 5m
+        labels:
+          severity: info
+          component: compliance
+        annotations:
+          summary: "High rate of compliance failures"
+          description: "{{ $value }} compliance failures per second"
+
+  - name: fiatrails_business
+    interval: 60s
+    rules:
+      # No successful mints in 10 minutes (possible system issue)
+      - alert: NoSuccessfulMints
+        expr: |
+          rate(fiatrails_mint_intents_total{status="executed"}[10m]) == 0
+        for: 10m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "No successful mints in 10 minutes"
+          description: "System may be degraded or compliance blocking all"
+
+      # Callback processing stalled
+      - alert: CallbacksNotProcessing
+        expr: |
+          rate(fiatrails_callbacks_total[5m]) == 0
+          AND
+          fiatrails_dlq_depth > 0
+        for: 5m
+        labels:
+          severity: critical
+          component: callbacks
+        annotations:
+          summary: "Callbacks not being processed"
+          description: "DLQ has items but no processing happening"
+
+# SLO definitions (candidates should document these)
+#
+# Availability: 99.9% (43m downtime/month)
+# Latency: p95 < 500ms for API, p95 < 2s for RPC
+# Error rate: < 1% for API, < 5% for RPC
+# Mint success rate: > 95% (for compliant users)
+

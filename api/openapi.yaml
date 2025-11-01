@@ -1,0 +1,366 @@
+openapi: 3.0.3
+info:
+  title: FiatRails API
+  description: |
+    Production-grade API façade for FiatRails on-chain operations.
+    
+    **Requirements:**
+    - Idempotency: Same payload → same outcome
+    - Request signing/verification (HMAC)
+    - Retry with exponential backoff to RPC
+    - Dead-letter queue for failed operations
+    - Observability metrics (Prometheus/OpenTelemetry)
+  version: 1.0.0
+  contact:
+    name: FiatRails Protocol Engineering
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development
+
+security:
+  - HmacAuth: []
+
+paths:
+  /mint-intents:
+    post:
+      summary: Submit a mint intent
+      description: |
+        Submit an intent to mint country tokens from USD stablecoin.
+        
+        **Idempotency:** Include `X-Idempotency-Key` header. Duplicate requests
+        with same key return the original response (201 or 409).
+        
+        **Flow:**
+        1. Validate request signature
+        2. Check idempotency key
+        3. Submit on-chain intent
+        4. Return intent ID
+      operationId: submitMintIntent
+      tags:
+        - Minting
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/RequestSignature'
+        - $ref: '#/components/parameters/RequestTimestamp'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MintIntentRequest'
+      responses:
+        '201':
+          description: Intent submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MintIntentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Idempotency key already used
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MintIntentResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /mint-intents/{intentId}:
+    get:
+      summary: Get mint intent status
+      operationId: getMintIntent
+      tags:
+        - Minting
+      parameters:
+        - name: intentId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{64}$'
+      responses:
+        '200':
+          description: Intent details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MintIntentStatus'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /callbacks/mpesa:
+    post:
+      summary: M-PESA payment webhook
+      description: |
+        Simulated M-PESA callback endpoint.
+        
+        **Security:**
+        - Verify HMAC signature in `X-Mpesa-Signature` header
+        - Reject replays (check timestamp freshness)
+        - Idempotent execution
+        
+        **Flow:**
+        1. Verify HMAC
+        2. Check idempotency (txRef)
+        3. Call escrow.executeMint()
+        4. Retry with backoff if RPC fails
+        5. DLQ if all retries exhausted
+      operationId: mpesaCallback
+      tags:
+        - Callbacks
+      parameters:
+        - name: X-Mpesa-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+          description: HMAC-SHA256 of request body
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MpesaCallback'
+      responses:
+        '200':
+          description: Callback processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [processed, already_processed]
+                  intentId:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid HMAC signature
+
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Operations
+      security: []
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded]
+                  rpc:
+                    type: object
+                    properties:
+                      connected:
+                        type: boolean
+                      latency_ms:
+                        type: number
+                  queue_depth:
+                    type: integer
+
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      operationId: getMetrics
+      tags:
+        - Operations
+      security: []
+      responses:
+        '200':
+          description: Prometheus text format
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  securitySchemes:
+    HmacAuth:
+      type: apiKey
+      in: header
+      name: X-Request-Signature
+      description: HMAC-SHA256(secret, timestamp + body)
+
+  parameters:
+    IdempotencyKey:
+      name: X-Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 128
+      description: Client-generated unique key (UUID recommended)
+    
+    RequestSignature:
+      name: X-Request-Signature
+      in: header
+      required: true
+      schema:
+        type: string
+      description: HMAC-SHA256 signature
+    
+    RequestTimestamp:
+      name: X-Request-Timestamp
+      in: header
+      required: true
+      schema:
+        type: integer
+      description: Unix timestamp (seconds)
+
+  schemas:
+    MintIntentRequest:
+      type: object
+      required:
+        - user
+        - amount
+        - countryCode
+        - txRef
+      properties:
+        user:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{40}$'
+          description: Ethereum address
+        amount:
+          type: string
+          pattern: '^\d+$'
+          description: Amount in wei (18 decimals)
+        countryCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: ISO 3166-1 alpha-3 country code
+          example: KES
+        txRef:
+          type: string
+          description: Off-chain transaction reference
+          example: MPESA-ABC123
+
+    MintIntentResponse:
+      type: object
+      properties:
+        intentId:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{64}$'
+        status:
+          type: string
+          enum: [pending, executed, refunded, failed]
+        txHash:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{64}$'
+          description: On-chain transaction hash
+        createdAt:
+          type: string
+          format: date-time
+
+    MintIntentStatus:
+      type: object
+      properties:
+        intentId:
+          type: string
+        user:
+          type: string
+        amount:
+          type: string
+        countryCode:
+          type: string
+        txRef:
+          type: string
+        status:
+          type: string
+          enum: [pending, executed, refunded, failed]
+        txHash:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        executedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    MpesaCallback:
+      type: object
+      required:
+        - txRef
+        - amount
+        - phone
+        - timestamp
+      properties:
+        txRef:
+          type: string
+          description: M-PESA transaction ID
+        amount:
+          type: string
+          description: Amount in KES (or other currency)
+        phone:
+          type: string
+          description: Phone number
+        timestamp:
+          type: integer
+          description: Unix timestamp
+        metadata:
+          type: object
+          additionalProperties: true
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        requestId:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Unauthorized:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Minting
+    description: Mint intent operations
+  - name: Callbacks
+    description: External webhook endpoints
+  - name: Operations
+    description: Health and metrics
+

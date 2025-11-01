@@ -1,0 +1,53 @@
+{
+  "_comment": "Per-candidate unique seed for Githaiga - MUST use these values in your implementation",
+  "candidateId": "Githaiga",
+  "chain": {
+    "chainId": 31382,
+    "rpcUrl": "http://localhost:8545",
+    "blockTime": 2
+  },
+  "tokens": {
+    "stablecoin": {
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "decimals": 18
+    },
+    "country": {
+      "symbol": "KES",
+      "name": "Kenya Shilling Token",
+      "countryCode": "KES",
+      "decimals": 18
+    }
+  },
+  "secrets": {
+    "hmacSalt": "fiatrails_hmac_salt_db0dec8bc76794ae",
+    "idempotencyKeySalt": "fiatrails_idem_salt_e2255b32f133aeee",
+    "mpesaWebhookSecret": "mpesa_webhook_secret_d3f23a70ddb53521"
+  },
+  "compliance": {
+    "maxRiskScore": 83,
+    "requireAttestation": true,
+    "minAttestationAge": 0
+  },
+  "limits": {
+    "minMintAmount": "1000000000000000000",
+    "maxMintAmount": "1000000000000000000000",
+    "dailyMintLimit": "10000000000000000000000"
+  },
+  "retry": {
+    "maxAttempts": 4,
+    "initialBackoffMs": 691,
+    "maxBackoffMs": 30000,
+    "backoffMultiplier": 2
+  },
+  "timeouts": {
+    "rpcTimeoutMs": 20178,
+    "webhookTimeoutMs": 3076,
+    "idempotencyWindowSeconds": 86400
+  },
+  "validation": {
+    "checksumHash": "0x571c20f60035308b",
+    "configVersion": "1.0.0",
+    "generatedAt": "2025-11-01T05:16:39.671Z"
+  }
+}
