@@ -51,3 +51,21 @@ FiatRails enables secure, compliant conversion of fiat currency to country-speci
 - **POST /callbacks/mpesa**: Process M-PESA payment confirmations
 - **GET /health**: Service health and connectivity status
 - **GET /metrics**: Prometheus-formatted metrics
+
+
+
+### Security Features
+
+- HMAC signature verification for all webhooks
+- Timestamp-based replay attack prevention
+- Role-based access control on all contracts
+- Pausable contracts for emergency stops
+- Comprehensive audit trail via indexed events
+
+### Resilience
+
+- Exponential backoff retry mechanism
+- Dead-letter queue for failed operations
+- Graceful RPC failure handling
+- Nonce management for transaction ordering
+- Request deduplication via idempotency keys
