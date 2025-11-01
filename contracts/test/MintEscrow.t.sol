@@ -229,4 +229,71 @@ contract MintEscrowTest is Test {
         vm.expectRevert(IMintEscrow.IntentAlreadyExecuted.selector);
         escrow.executeMint(intentId);
     }
+
+    // ============ refundIntent Tests ============
+
+    function testRefundIntent() public {
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        uint256 aliceBalanceBefore = usd.balanceOf(alice);
+
+        vm.prank(executor);
+        escrow.refundIntent(intentId, "User not compliant");
+
+        assertEq(usd.balanceOf(alice), aliceBalanceBefore + 100e18);
+        assertEq(uint256(escrow.getIntentStatus(intentId)), uint256(IMintEscrow.MintStatus.Refunded));
+    }
+
+    function testRefundIntentEmitsEvent() public {
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(executor);
+        vm.expectEmit(true, true, false, true);
+        emit MintRefunded(intentId, alice, 100e18, "User not compliant");
+
+        escrow.refundIntent(intentId, "User not compliant");
+    }
+
+    function testRefundIntentRequiresExecutorRole() public {
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(alice);
+        vm.expectRevert();
+        escrow.refundIntent(intentId, "reason");
+    }
+
+    function testRefundIntentRevertsIntentNotFound() public {
+        vm.prank(executor);
+        vm.expectRevert(IMintEscrow.IntentNotFound.selector);
+        escrow.refundIntent(bytes32("nonexistent"), "reason");
+    }
+
+    function testRefundIntentRevertsAlreadyExecuted() public {
+        registry.updateUser(alice, 50, keccak256("KYC"), true);
+
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(executor);
+        escrow.executeMint(intentId);
+
+        vm.prank(executor);
+        vm.expectRevert(IMintEscrow.IntentAlreadyExecuted.selector);
+        escrow.refundIntent(intentId, "reason");
+    }
+
+    function testRefundIntentRevertsAlreadyRefunded() public {
+        vm.prank(alice);
+        bytes32 intentId = escrow.submitIntent(100e18, COUNTRY_CODE, TX_REF_1);
+
+        vm.prank(executor);
+        escrow.refundIntent(intentId, "first refund");
+
+        vm.prank(executor);
+        vm.expectRevert(IMintEscrow.IntentAlreadyExecuted.selector);
+        escrow.refundIntent(intentId, "second refund");
+    }
 }
