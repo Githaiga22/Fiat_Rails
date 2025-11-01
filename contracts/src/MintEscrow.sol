@@ -93,4 +93,24 @@ contract MintEscrow is IMintEscrow, AccessControl, ReentrancyGuard {
 
         emit MintExecuted(intentId, intent.user, intent.amount, intent.countryCode, intent.txRef);
     }
+
+    /**
+     * @notice Refund intent
+     * @param intentId Intent to refund
+     * @param reason Refund reason
+     */
+    function refundIntent(bytes32 intentId, string calldata reason) external onlyRole(EXECUTOR_ROLE) nonReentrant {
+        MintIntent storage intent = intents[intentId];
+
+        if (intent.timestamp == 0) revert IntentNotFound();
+        if (intent.status != MintStatus.Pending) revert IntentAlreadyExecuted();
+
+        intent.status = MintStatus.Refunded;
+
+        if (!usdStablecoin.transfer(intent.user, intent.amount)) {
+            revert TransferFailed();
+        }
+
+        emit MintRefunded(intentId, intent.user, intent.amount, reason);
+    }
 }
