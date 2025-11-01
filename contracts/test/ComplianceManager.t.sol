@@ -232,4 +232,26 @@ contract ComplianceManagerTest is Test {
         vm.expectRevert();
         manager.updateUserRisk(alice, 50);
     }
+
+    // ============ Fuzz Tests ============
+
+    function testFuzzUpdateUserRisk(address user, uint8 riskScore) public {
+        vm.assume(user != address(0));
+        vm.assume(riskScore <= 100);
+
+        registry.updateUser(user, 0, TEST_ATTESTATION, true);
+        manager.updateUserRisk(user, riskScore);
+
+        assertEq(registry.getRiskScore(user), riskScore);
+    }
+
+    function testFuzzRecordAttestation(address user, bytes32 attestation) public {
+        vm.assume(user != address(0));
+        vm.assume(attestation != bytes32(0));
+
+        registry.updateUser(user, 50, bytes32(0), true);
+        manager.recordAttestation(user, attestation, ATTESTATION_TYPE_KYC);
+
+        assertEq(registry.getAttestationHash(user), attestation);
+    }
 }
