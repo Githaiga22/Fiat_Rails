@@ -43,3 +43,11 @@ FiatRails enables secure, compliant conversion of fiat currency to country-speci
 - **MintEscrow**: Idempotent minting with automatic compliance verification
 - **CountryToken**: ERC20 token representing country-specific stablecoin
 - **USDStablecoin**: Mock USDC for testing
+
+
+### API Service
+
+- **POST /mint-intents**: Submit new mint requests with idempotency support
+- **POST /callbacks/mpesa**: Process M-PESA payment confirmations
+- **GET /health**: Service health and connectivity status
+- **GET /metrics**: Prometheus-formatted metrics
