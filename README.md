@@ -10,3 +10,25 @@ FiatRails enables secure, compliant conversion of fiat currency to country-speci
 - **API Service**: Resilient backend with idempotency, HMAC verification, and retry mechanisms
 - **Observability**: Full Prometheus/Grafana monitoring stack with actionable alerts
 - **Production-Ready**: Docker-based deployment with comprehensive testing and operational runbooks
+
+
+## Architecture
+
+```
+┌─────────────┐      ┌──────────────┐      ┌─────────────────┐
+│   M-PESA    │─────▶│  API Service │─────▶│ Smart Contracts │
+│  (Webhook)  │      │  (Node.js)   │      │   (Solidity)    │
+└─────────────┘      └──────────────┘      └─────────────────┘
+                            │                       │
+                            ▼                       ▼
+                     ┌──────────────┐      ┌─────────────────┐
+                     │  PostgreSQL  │      │  EVM Network    │
+                     │ (Idempotency)│      │    (Anvil)      │
+                     └──────────────┘      └─────────────────┘
+                            │
+                            ▼
+                     ┌──────────────┐
+                     │  Prometheus  │
+                     │   Grafana    │
+                     └──────────────┘
+```
