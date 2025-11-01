@@ -40,41 +40,41 @@
 **Goal:** Build and test all required smart contracts
 
 #### 2.1 USDStablecoin Mock (15 min)
-- [ ] Create `USDStablecoin.sol` - basic ERC20 with 18 decimals
-- [ ] Add pre-mint function for testing
-- [ ] Write basic unit tests
-- [ ] Git commit: "feat: implement USD stablecoin mock"
+- [x] ✅ Create `USDStablecoin.sol` - basic ERC20 with 18 decimals
+- [x] ✅ Add pre-mint function for testing
+- [x] ✅ Write basic unit tests
+- [x] ✅ Git commit: "feat: implement USD stablecoin mock"
 
 #### 2.2 CountryToken (20 min)
-- [ ] Create `CountryToken.sol` - ERC20 using seed.json country code as symbol
-- [ ] Implement minter role mechanism
-- [ ] Add 18 decimals
-- [ ] Write unit tests for minting permissions
-- [ ] Git commit: "feat: implement country token with role-based minting"
+- [x] ✅ Create `CountryToken.sol` - ERC20 using seed.json country code as symbol
+- [x] ✅ Implement minter role mechanism
+- [x] ✅ Add 18 decimals
+- [x] ✅ Write unit tests for minting permissions
+- [x] ✅ Git commit: "feat: implement country token with role-based minting"
 
 #### 2.3 UserRegistry Contract (45 min)
-- [ ] Create `UserRegistry.sol`
-- [ ] Implement storage for risk scores (uint8, 0-100)
-- [ ] Implement storage for attestation hashes
-- [ ] Add role-based access control for writes
-- [ ] Implement query interface for compliance checks
-- [ ] Emit `UserRiskUpdated` event with proper indexing
-- [ ] Emit `AttestationRecorded` event with proper indexing
-- [ ] Write unit tests (happy path)
-- [ ] Write fuzz tests for risk score boundaries
-- [ ] Git commit: "feat: implement UserRegistry with risk scoring"
+- [x] ✅ Create `UserRegistry.sol`
+- [x] ✅ Implement storage for risk scores (uint8, 0-100)
+- [x] ✅ Implement storage for attestation hashes
+- [x] ✅ Add role-based access control for writes
+- [x] ✅ Implement query interface for compliance checks
+- [x] ✅ Emit `UserRiskUpdated` event with proper indexing
+- [x] ✅ Emit `AttestationRecorded` event with proper indexing
+- [x] ✅ Write unit tests (happy path)
+- [x] ✅ Write fuzz tests for risk score boundaries
+- [x] ✅ Git commit: "feat: implement UserRegistry with risk scoring"
 
 #### 2.4 ComplianceManager Contract (1 hour)
-- [ ] Create `ComplianceManager.sol` with UUPS upgradeability
-- [ ] Implement role-based access control (ADMIN, COMPLIANCE_OFFICER, UPGRADER)
-- [ ] Add Pausable mechanism
-- [ ] Write logic to check user compliance status
-- [ ] Ensure all events are properly indexed
-- [ ] Write unit tests for all roles
-- [ ] Write upgrade tests (test upgradeability)
-- [ ] Test pause mechanism
-- [ ] Document ADR decision: Why UUPS vs Transparent proxy
-- [ ] Git commit: "feat: implement ComplianceManager with UUPS upgradeability"
+- [x] ✅ Create `ComplianceManager.sol` with UUPS upgradeability
+- [x] ✅ Implement role-based access control (ADMIN, COMPLIANCE_OFFICER, UPGRADER)
+- [x] ✅ Add Pausable mechanism
+- [x] ✅ Write logic to check user compliance status
+- [x] ✅ Ensure all events are properly indexed
+- [x] ✅ Write unit tests for all roles
+- [x] ✅ Write upgrade tests (test upgradeability)
+- [x] ✅ Test pause mechanism
+- [x] ✅ Document ADR decision: Why UUPS vs Transparent proxy
+- [x] ✅ Git commit: "feat: implement ComplianceManager with UUPS upgradeability"
 
 #### 2.5 MintEscrow Contract (1.5 hours)
 - [ ] Create `MintEscrow.sol`
