@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import { config, validateConfig } from './config.js';
 import { initDatabase, closeDatabase, cleanupExpiredKeys } from './database.js';
