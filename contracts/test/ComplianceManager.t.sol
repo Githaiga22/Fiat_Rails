@@ -24,8 +24,10 @@ contract ComplianceManagerTest is Test {
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     bytes32 public constant TEST_ATTESTATION = keccak256("KYC_DOC");
+    bytes32 public constant ATTESTATION_TYPE_KYC = keccak256("KYC");
 
     event UserRiskUpdated(address indexed user, uint8 newRiskScore, address indexed updatedBy, uint256 timestamp);
+    event AttestationRecorded(address indexed user, bytes32 indexed attestationHash, bytes32 attestationType, address indexed recordedBy);
 
     function setUp() public {
         admin = address(this);
@@ -96,5 +98,44 @@ contract ComplianceManagerTest is Test {
         manager.updateUserRisk(alice, 60);
 
         assertEq(registry.getAttestationHash(alice), TEST_ATTESTATION);
+    }
+
+    // ============ recordAttestation Tests ============
+
+    function testRecordAttestation() public {
+        registry.updateUser(alice, 50, bytes32(0), true);
+
+        vm.expectEmit(true, true, false, true);
+        emit AttestationRecorded(alice, TEST_ATTESTATION, ATTESTATION_TYPE_KYC, admin);
+
+        manager.recordAttestation(alice, TEST_ATTESTATION, ATTESTATION_TYPE_KYC);
+
+        assertEq(registry.getAttestationHash(alice), TEST_ATTESTATION);
+    }
+
+    function testRecordAttestationRequiresComplianceOfficer() public {
+        vm.prank(alice);
+        vm.expectRevert();
+        manager.recordAttestation(alice, TEST_ATTESTATION, ATTESTATION_TYPE_KYC);
+    }
+
+    function testRecordAttestationRevertsWhenPaused() public {
+        manager.pause();
+
+        vm.expectRevert();
+        manager.recordAttestation(alice, TEST_ATTESTATION, ATTESTATION_TYPE_KYC);
+    }
+
+    function testRecordAttestationInvalidHash() public {
+        vm.expectRevert(IComplianceManager.InvalidAttestation.selector);
+        manager.recordAttestation(alice, bytes32(0), ATTESTATION_TYPE_KYC);
+    }
+
+    function testRecordAttestationPreservesRiskScore() public {
+        registry.updateUser(alice, 50, bytes32(0), true);
+
+        manager.recordAttestation(alice, TEST_ATTESTATION, ATTESTATION_TYPE_KYC);
+
+        assertEq(registry.getRiskScore(alice), 50);
     }
 }
