@@ -1,13 +1,25 @@
 {
-  "name": "api",
+  "name": "fiatrails-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "FiatRails API service for fiat-to-crypto minting",
+  "main": "src/index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test test/**/*.test.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "keywords": ["fiatrails", "crypto", "compliance"],
+  "author": "Githaiga",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ethers": "^6.9.0",
+    "better-sqlite3": "^9.2.2",
+    "prom-client": "^15.1.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  }
 }
