@@ -1,0 +1,12 @@
+{
+  "deployer": "0x4B359D10c05b8615B437AA76bD4A5aEef4FdDE9F",
+  "usdStablecoin": "0xEc2B9dde309737CCaeC137939aCb4f8524876D1d",
+  "countryToken": "0x0c6575E7C5537EE3a5B6c39a623e6C1BE220f190",
+  "userRegistry": "0x7Ccd2f5eA5BAfC044019e61cd0Cb827DCfdC595D",
+  "complianceManager": "0x4E5bF49866d88D7DD36Ba10D091Efe383e70C12E",
+  "mintEscrow": "0xEb95f8fD9B1b062F2eDCfde500F6A1d78274cb58",
+  "network": "lisk-sepolia",
+  "chainId": 4202,
+  "rpcUrl": "https://rpc.sepolia-api.lisk.com",
+  "timestamp": 1762032638
+}
