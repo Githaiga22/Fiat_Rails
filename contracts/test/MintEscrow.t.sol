@@ -56,7 +56,7 @@ contract MintEscrowTest is Test {
         bob = makeAddr("bob");
 
         usd = new USDStablecoin();
-        countryToken = new CountryToken("Kenya Shilling", "KES");
+        countryToken = new CountryToken();
         registry = new UserRegistry();
 
         escrow = new MintEscrow(
