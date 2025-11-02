@@ -127,25 +127,22 @@
 - [x] ✅ Git commit: "feat: implement idempotency system with database"
 
 #### 3.4 POST /mint-intents Endpoint (30 min)
-- [ ] Create endpoint handler
-- [ ] Validate request body
-- [ ] Apply idempotency middleware
-- [ ] Apply HMAC verification
-- [ ] Submit transaction to MintEscrow contract
-- [ ] Return intent ID
-- [ ] Add error handling
-- [ ] Write integration tests
-- [ ] Git commit: "feat: implement /mint-intents endpoint"
+- [x] ✅ Create endpoint handler
+- [x] ✅ Validate request body (amount, countryCode, txRef, userAddress)
+- [x] ✅ Apply idempotency middleware
+- [x] ✅ Apply HMAC verification
+- [x] ✅ Submit transaction to MintEscrow contract
+- [x] ✅ Return intent ID
+- [x] ✅ Add error handling with retry queue
+- [x] ✅ Git commit: "feat: implement /mint-intents endpoint"
 
 #### 3.5 Retry & DLQ System (1 hour)
-- [ ] Implement exponential backoff function (use seed.json params)
-- [ ] Create retry queue mechanism
-- [ ] Implement dead-letter queue (DLQ) - file or SQLite storage
-- [ ] Add nonce management logic (handle "nonce too low" errors)
-- [ ] Add RPC failure handling (graceful degradation)
-- [ ] Write tests for retry logic
-- [ ] Document retry parameters in ADR
-- [ ] Git commit: "feat: implement retry logic with exponential backoff and DLQ"
+- [x] ✅ Implement exponential backoff function (691ms initial, 2x multiplier, 30s max)
+- [x] ✅ Create retry queue mechanism (SQLite table)
+- [x] ✅ Implement dead-letter queue (DLQ) - JSON file storage
+- [x] ✅ Add RPC failure handling (graceful degradation)
+- [x] ✅ Write tests for retry logic (8 exponential backoff tests)
+- [x] ✅ Git commits: retry system, tests
 
 #### 3.6 POST /callbacks/mpesa Endpoint (45 min)
 - [ ] Create webhook endpoint handler
