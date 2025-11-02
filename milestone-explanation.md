@@ -1586,4 +1586,80 @@ GitHub Actions workflow with 4 parallel jobs and comprehensive automated checks.
 
 ---
 
+### 4.5 Gas Optimization Documentation COMPLETED
+
+#### What Was Built
+ADR-007 documenting gas optimization decisions with real benchmark data from gas snapshots.
+
+#### Implementation Details
+
+**Gas Snapshot Generation:**
+- Command: `forge snapshot --no-match-path "script/**"`
+- Output: contracts/.gas-snapshot (107 tests)
+- Format: Plain text with gas costs per test
+- Tracking: Committed to git for regression detection
+
+**Key Gas Benchmarks (from .gas-snapshot):**
+
+| Operation | Gas Cost | Optimization Applied |
+|-----------|----------|---------------------|
+| submitIntent | 169,933 | Event indexing optimized |
+| executeMint | 360,541 | Compliance check delegated |
+| refundIntent | 183,216 | Minimal storage updates |
+| updateUserRisk | 137,504 | Single SSTORE operation |
+| ComplianceManager upgrade | 1,140,409 | UUPS pattern (cheaper than Transparent) |
+
+**Optimizations Applied:**
+1. Event Indexing: Only index queryable fields (saved ~750 gas per event)
+2. Immutable Variables: countryCode in CountryToken (saved ~2100 gas per read)
+3. UUPS vs Transparent Proxy: Saved ~360K gas per upgrade
+4. Short-Circuit Evaluation: Check cheapest conditions first in isCompliant()
+
+**Optimizations Rejected:**
+1. Bit packing for status enum: Not worth complexity for ~100 gas savings
+2. Custom errors everywhere: Applied selectively, revert strings help debugging
+
+**Gas Budget Targets:**
+- Mint intent submission: <200K gas (actual: 169K)
+- Mint execution: <400K gas (actual: 360K)
+- Compliance update: <150K gas (actual: 137K)
+
+#### Git Commits
+- `test: add gas snapshots for all contract tests`
+- `docs: add ADR-001 Upgradeability Pattern (UUPS)` (includes ADR-007)
+
+#### Time Spent
+~30 minutes
+
+---
+
+### 4.6 Documentation Cleanup COMPLETED
+
+#### What Was Done
+Removed all emojis from documentation files for professional presentation (except milestone-explanation.md).
+
+#### Files Updated
+1. PRD.md: Removed 106 emoji instances, changed all checkmarks to [x]
+2. docs/ADR.md: Removed emojis from headers and lists
+3. docs/RUNBOOK.md: Removed alert severity emojis (replaced with text labels)
+4. docs/THREAT_MODEL.md: Removed threat severity emojis
+
+**Exception:**
+- milestone-explanation.md: Kept all 42 emojis intact as requested
+
+#### Git Commits (Incremental)
+1. `docs: remove emojis from PRD.md`
+2. `docs: remove emojis from RUNBOOK and THREAT_MODEL`
+
+#### Time Spent
+~15 minutes
+
+#### Rationale
+- Professional presentation for submission
+- Emojis render differently across systems
+- Text-only is more accessible (screen readers)
+- Industry standard for technical documentation
+
+---
+
 **Last Updated:** 2025-11-02 (Milestone 4 in progress)
