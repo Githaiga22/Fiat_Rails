@@ -21,11 +21,9 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load deployments and seed
+// Load deployments
 const deploymentsPath = join(__dirname, '..', 'deployments.json');
 const deployments = JSON.parse(fs.readFileSync(deploymentsPath, 'utf8'));
-const seedPath = join(__dirname, '..', 'seed.json');
-const seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
 
 // Anvil default test accounts
 const TEST_USER = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
@@ -48,18 +46,6 @@ function castCall(contractAddress, signature, ...args) {
   }
 }
 
-/**
- * Execute cast send and return transaction hash
- */
-function castSend(contractAddress, signature, privateKey, ...args) {
-  const cmd = `cast send ${contractAddress} "${signature}" ${args.join(' ')} --rpc-url ${RPC_URL} --private-key ${privateKey}`;
-  try {
-    return execSync(cmd, { encoding: 'utf8' }).trim();
-  } catch (error) {
-    console.error(`Cast send failed: ${error.message}`);
-    return null;
-  }
-}
 
 /**
  * Assert function for tests

@@ -264,26 +264,26 @@
 **Goal:** Deploy contracts, create deployment script, record screencast
 
 #### 6.1 Deployment Script (30 min)
-- [ ] Create `scripts/deploy-and-demo.sh`
-- [ ] Script should:
-  - [ ] Deploy all contracts to Anvil
-  - [ ] Configure contract relationships (grant roles, set addresses)
-  - [ ] Pre-mint USD tokens to test users
-  - [ ] Create test users in UserRegistry
-- [ ] Create `deployments.json` with contract addresses
-- [ ] Test script works from clean state
-- [ ] Git commit: "scripts: add deployment and demo script"
+- [x] Create `scripts/deploy-and-demo.sh`
+- [x] Script should:
+  - [x] Deploy all contracts to Anvil
+  - [x] Configure contract relationships (grant roles, set addresses)
+  - [x] Pre-mint USD tokens to test users
+  - [x] Create test users in UserRegistry
+- [x] Create `deployments.json` with contract addresses
+- [x] Test script works from clean state
+- [x] Git commit: "scripts: add deployment and demo script"
 
 #### 6.2 End-to-End Testing (30 min)
-- [ ] Test complete flow:
+- [x] Test complete flow:
   1. Submit mint intent via API
   2. Trigger M-PESA callback
   3. Verify mint executed on-chain
-- [ ] Test retry logic with simulated RPC failure
-- [ ] Test DLQ with exhausted retries
-- [ ] Verify metrics update in Grafana
-- [ ] Test idempotency (send duplicate requests)
-- [ ] Git commit: "test: verify end-to-end flow"
+- [ ] Test retry logic with simulated RPC failure (requires manual testing or integration framework)
+- [ ] Test DLQ with exhausted retries (requires manual testing or integration framework)
+- [x] Verify metrics update in Grafana (metrics endpoints tested in e2e-test.js)
+- [x] Test idempotency (send duplicate requests)
+- [x] Git commit: "test: verify end-to-end flow"
 
 #### 6.3 Screencast Recording (30 min)
 - [ ] Record 10-minute max walkthrough showing:
