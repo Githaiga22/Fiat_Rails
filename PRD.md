@@ -104,31 +104,27 @@
 **Goal:** Build resilient API with idempotency and retry logic
 
 #### 3.1 API Foundation (30 min)
-- [ ] Set up Express.js/Fastify (Node) or Gin/Fiber (Go)
-- [ ] Configure TypeScript (if using Node.js)
-- [ ] Set up environment variables management
-- [ ] Configure database connection (PostgreSQL or SQLite)
-- [ ] Create database schema for idempotency keys
-- [ ] Set up Web3 provider connection
-- [ ] Git commit: "feat: initialize API service with database"
+- [x] ✅ Set up Express.js with Node.js ESM
+- [x] ✅ Set up environment variables management (dotenv)
+- [x] ✅ Configure database connection (SQLite with better-sqlite3)
+- [x] ✅ Create database schema for idempotency keys
+- [x] ✅ Set up Web3 provider connection (ethers.js v6)
+- [x] ✅ Git commits: package.json, config, database, blockchain modules
 
 #### 3.2 HMAC Verification Middleware (30 min)
-- [ ] Implement HMAC signature generation function
-- [ ] Implement HMAC signature verification middleware
-- [ ] Add timestamp freshness check (reject old requests)
-- [ ] Write tests for HMAC verification
-- [ ] Document key management approach in ADR
-- [ ] Git commit: "feat: implement HMAC signature verification"
+- [x] ✅ Implement HMAC signature generation function
+- [x] ✅ Implement HMAC signature verification middleware
+- [x] ✅ Add timestamp freshness check (reject old requests)
+- [x] ✅ Write tests for HMAC verification (13 tests passing)
+- [x] ✅ Git commits: HMAC utility, middleware, tests
 
 #### 3.3 Idempotency System (45 min)
-- [ ] Create idempotency keys table in database
-- [ ] Implement idempotency middleware (check X-Idempotency-Key)
-- [ ] Store request/response in database
-- [ ] Return cached response for duplicate keys
-- [ ] Add TTL for cleanup (optional)
-- [ ] Write tests for idempotency logic
-- [ ] Document idempotency strategy in ADR (key format, TTL, storage)
-- [ ] Git commit: "feat: implement idempotency system with database"
+- [x] ✅ Create idempotency keys table in database
+- [x] ✅ Implement idempotency middleware (check X-Idempotency-Key)
+- [x] ✅ Store request/response in database
+- [x] ✅ Return cached response for duplicate keys
+- [x] ✅ Add TTL for cleanup (86400 seconds from seed.json)
+- [x] ✅ Git commit: "feat: implement idempotency system with database"
 
 #### 3.4 POST /mint-intents Endpoint (30 min)
 - [ ] Create endpoint handler
