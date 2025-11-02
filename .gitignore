@@ -62,3 +62,8 @@ temp/
 # Prometheus & Grafana data
 prometheus_data/
 grafana_data/
+
+# Project planning files (keep local only)
+PRD.md
+milestone-explanation.md
+Test-Readme.md
