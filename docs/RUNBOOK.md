@@ -206,9 +206,9 @@ A bad upgrade was deployed and needs to be rolled back.
 
 ### Pre-requisites
 
-- ✅ UPGRADER_ROLE on the ComplianceManager
-- ✅ Previous implementation address (from deploy logs)
-- ✅ Testnet rollback tested
+- UPGRADER_ROLE on the ComplianceManager
+- Previous implementation address (from deploy logs)
+- Testnet rollback tested
 
 ### Procedure
 
@@ -397,10 +397,10 @@ Example item:
 **2. Determine Failure Reason**
 
 Common reasons:
-- ✅ RPC was down (temporary) → safe to retry
-- ✅ Nonce issue (resolved) → safe to retry
-- ✅ User not compliant (permanent) → mark as failed, notify user
-- ✅ Contract bug (requires fix) → wait for upgrade
+- RPC was down (temporary) → safe to retry
+- Nonce issue (resolved) → safe to retry
+- User not compliant (permanent) → mark as failed, notify user
+- Contract bug (requires fix) → wait for upgrade
 
 ### Manual Replay
 

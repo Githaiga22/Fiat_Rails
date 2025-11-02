@@ -36,9 +36,9 @@ escrow.executeMint(intentId);
 **Impact:** Critical (double-spend)
 
 **Mitigation:**
-- ✅ Checks-Effects-Interactions pattern
-- ✅ ReentrancyGuard on public functions
-- ✅ State updated before external calls
+- Checks-Effects-Interactions pattern
+- ReentrancyGuard on public functions
+- State updated before external calls
 
 ```solidity
 // Example mitigation
@@ -46,9 +46,9 @@ function executeMint(bytes32 intentId) external nonReentrant {
     MintIntent storage intent = intents[intentId];
     require(intent.status == MintStatus.Pending, "Already executed");
     
-    intent.status = MintStatus.Executed; // ✅ State change first
+    intent.status = MintStatus.Executed; // State change first
     
-    _mintCountryToken(intent.user, intent.amount); // ✅ Then external call
+    _mintCountryToken(intent.user, intent.amount); // Then external call
 }
 ```
 
@@ -67,10 +67,10 @@ Deploying a broken implementation contract that can't be upgraded further, perma
 **Impact:** Critical (funds locked forever)
 
 **Mitigation:**
-- ✅ `_authorizeUpgrade()` requires UPGRADER role
-- ✅ Storage layout preserved (use storage gap)
-- ✅ `_disableInitializers()` in implementation constructor
-- ✅ Test upgrade path on testnet before production
+- `_authorizeUpgrade()` requires UPGRADER role
+- Storage layout preserved (use storage gap)
+- `_disableInitializers()` in implementation constructor
+- Test upgrade path on testnet before production
 
 ```solidity
 function _authorizeUpgrade(address newImplementation) 
@@ -99,10 +99,10 @@ Unauthorized user gains ADMIN or UPGRADER role, allowing them to pause system or
 **Impact:** Critical (full system compromise)
 
 **Mitigation:**
-- ✅ AccessControl from OpenZeppelin
-- ✅ Multi-sig for admin operations (in production)
-- ✅ Time-delay for sensitive operations (optional)
-- ✅ Events for all role grants
+- AccessControl from OpenZeppelin
+- Multi-sig for admin operations (in production)
+- Time-delay for sensitive operations (optional)
+- Events for all role grants
 
 ```solidity
 function grantRole(bytes32 role, address account) 
@@ -111,7 +111,7 @@ function grantRole(bytes32 role, address account)
     onlyRole(getRoleAdmin(role)) 
 {
     super.grantRole(role, account);
-    emit RoleGranted(role, account, msg.sender); // ✅ Audit trail
+    emit RoleGranted(role, account, msg.sender); // Audit trail
 }
 ```
 
@@ -131,8 +131,8 @@ Searchers see compliance approval transaction and front-run with mint, or sandwi
 **Impact:** Medium (user experience degradation, not fund loss)
 
 **Mitigation:**
-- ✅ Compliance check happens atomically with mint
-- ✅ Flashbots/private RPC for sensitive transactions (production)
+- Compliance check happens atomically with mint
+- Flashbots/private RPC for sensitive transactions (production)
 - 🔄 Alternative: Commit-reveal for compliance attestations
 
 **Testing:**
@@ -149,9 +149,9 @@ If permits or signed messages used, replay on different chains or after nonce in
 **Impact:** Medium (duplicate operations)
 
 **Mitigation:**
-- ✅ Include chainId in signature domain
-- ✅ Include nonce per user
-- ✅ Mark signature as used after consumption
+- Include chainId in signature domain
+- Include nonce per user
+- Mark signature as used after consumption
 
 **Testing:**
 - Test signature can't be replayed
@@ -168,8 +168,8 @@ Arithmetic operations overflow, causing incorrect balances.
 **Impact:** Critical (if it happened)
 
 **Mitigation:**
-- ✅ Solidity ^0.8.0 (checked arithmetic by default)
-- ✅ SafeMath not needed for 0.8+
+- Solidity ^0.8.0 (checked arithmetic by default)
+- SafeMath not needed for 0.8+
 
 **Testing:**
 - Fuzz tests with extreme values
@@ -187,10 +187,10 @@ Attacker guesses or brute-forces HMAC secret, forges valid requests to drain fun
 **Impact:** Critical (unauthorized mints)
 
 **Mitigation:**
-- ✅ HMAC secret ≥ 256 bits entropy (from seed.json)
-- ✅ Verify HMAC on all authenticated endpoints
-- ✅ Constant-time comparison to prevent timing attacks
-- ✅ Secret never logged or exposed in errors
+- HMAC secret ≥ 256 bits entropy (from seed.json)
+- Verify HMAC on all authenticated endpoints
+- Constant-time comparison to prevent timing attacks
+- Secret never logged or exposed in errors
 
 ```javascript
 const crypto = require('crypto');
@@ -199,7 +199,7 @@ function verifyHMAC(request, secret) {
     const payload = request.timestamp + request.body;
     const expected = crypto.createHmac('sha256', secret).update(payload).digest('hex');
     
-    // ✅ Constant-time comparison
+    // Constant-time comparison
     return crypto.timingSafeEqual(
         Buffer.from(request.signature, 'hex'),
         Buffer.from(expected, 'hex')
@@ -223,9 +223,9 @@ Attacker captures M-PESA webhook payload and replays it multiple times to mint r
 **Impact:** High (double-mints)
 
 **Mitigation:**
-- ✅ Check timestamp freshness (reject if > 5min old)
-- ✅ Idempotency via `txRef` (store in DB)
-- ✅ Verify HMAC includes timestamp
+- Check timestamp freshness (reject if > 5min old)
+- Idempotency via `txRef` (store in DB)
+- Verify HMAC includes timestamp
 
 ```javascript
 function validateTimestamp(timestamp) {
@@ -256,9 +256,9 @@ Two different operations hash to same idempotency key, causing wrong response re
 **Impact:** Medium (user confusion, not fund loss)
 
 **Mitigation:**
-- ✅ Use SHA-256 (collision-resistant)
-- ✅ Include all distinguishing fields in hash
-- ✅ UUIDs as idempotency keys (client-generated)
+- Use SHA-256 (collision-resistant)
+- Include all distinguishing fields in hash
+- UUIDs as idempotency keys (client-generated)
 
 **Testing:**
 - Different payloads → different keys
@@ -275,9 +275,9 @@ Attacker front-runs your transaction with higher gas, incrementing nonce and cau
 **Impact:** Medium (service degradation, not fund loss)
 
 **Mitigation:**
-- ✅ Retry with fresh nonce on `nonce too low`
-- ✅ Nonce management library (e.g., ethers.js manages this)
-- ✅ Monitor for anomalous nonce gaps
+- Retry with fresh nonce on `nonce too low`
+- Nonce management library (e.g., ethers.js manages this)
+- Monitor for anomalous nonce gaps
 
 ```javascript
 async function sendTransaction(tx) {
@@ -311,9 +311,9 @@ Malicious RPC provider censors transactions or returns false data.
 **Impact:** High (service unavailable)
 
 **Mitigation:**
-- ✅ Fallback RPC endpoints
-- ✅ Health checks on RPC (measure latency, block lag)
-- ✅ Circuit breaker pattern
+- Fallback RPC endpoints
+- Health checks on RPC (measure latency, block lag)
+- Circuit breaker pattern
 - 🔄 Future: Run own node
 
 **Testing:**
@@ -331,18 +331,18 @@ User-controlled input in SQL query allows data exfiltration or corruption.
 **Impact:** High (database compromise)
 
 **Mitigation:**
-- ✅ Parameterized queries / ORM
-- ✅ Input validation (whitelists, not blacklists)
-- ✅ Least privilege DB user
+- Parameterized queries / ORM
+- Input validation (whitelists, not blacklists)
+- Least privilege DB user
 
 ```javascript
-// ✅ Safe
+// Safe
 const result = await db.query(
     'SELECT * FROM intents WHERE intentId = $1',
     [intentId]
 );
 
-// ❌ Vulnerable
+// Vulnerable
 const result = await db.query(
     `SELECT * FROM intents WHERE intentId = '${intentId}'`
 );
@@ -364,10 +364,10 @@ Private key for transaction signing committed to Git, leaked in logs, or stolen 
 **Impact:** Critical (attacker drains funds)
 
 **Mitigation:**
-- ✅ Private keys in environment variables only
-- ✅ `.gitignore` for `.env` files
-- ✅ Secrets manager (AWS Secrets, Vault) in production
-- ✅ Audit logs for key access
+- Private keys in environment variables only
+- `.gitignore` for `.env` files
+- Secrets manager (AWS Secrets, Vault) in production
+- Audit logs for key access
 
 **Testing:**
 - `git log | grep -i "private"` → no results
@@ -384,16 +384,16 @@ Malicious base image or dependency contains backdoor that exfiltrates keys.
 **Impact:** Critical (keys stolen)
 
 **Mitigation:**
-- ✅ Pin base image SHA (not `latest`)
-- ✅ Scan images with Trivy/Snyk
-- ✅ Minimal base image (Alpine, Distroless)
-- ✅ Multi-stage builds (no build tools in final image)
+- Pin base image SHA (not `latest`)
+- Scan images with Trivy/Snyk
+- Minimal base image (Alpine, Distroless)
+- Multi-stage builds (no build tools in final image)
 
 ```dockerfile
-# ✅ Pinned
+# Pinned
 FROM node:18-alpine@sha256:abc123...
 
-# ❌ Vulnerable
+# Vulnerable
 FROM node:latest
 ```
 
@@ -412,9 +412,9 @@ Chain reorgs after you've marked a mint as executed, leading to double-mint.
 **Impact:** High (duplicate mints)
 
 **Mitigation:**
-- ✅ Wait for N confirmations before finality (N=12 for Ethereum)
-- ✅ Monitor for reorgs (compare blockhashes)
-- ✅ Mark intents as `pending_confirmation` until final
+- Wait for N confirmations before finality (N=12 for Ethereum)
+- Monitor for reorgs (compare blockhashes)
+- Mark intents as `pending_confirmation` until final
 
 **Testing:**
 - Simulate reorg in Anvil (fork + rewind)
@@ -431,10 +431,10 @@ Attacker floods API with requests, exhausting resources.
 **Impact:** Medium (service unavailable for legit users)
 
 **Mitigation:**
-- ✅ Rate limiting by IP (e.g., 100 req/min)
-- ✅ Authentication required for sensitive endpoints
-- ✅ CAPTCHA for public endpoints (if needed)
-- ✅ Auto-scaling/load balancer
+- Rate limiting by IP (e.g., 100 req/min)
+- Authentication required for sensitive endpoints
+- CAPTCHA for public endpoints (if needed)
+- Auto-scaling/load balancer
 
 **Testing:**
 - Exceed rate limit → 429 response
@@ -453,15 +453,15 @@ User with high risk score bypasses check and mints tokens.
 **Impact:** Critical (regulatory violation)
 
 **Mitigation:**
-- ✅ Compliance check in `executeMint()`, not just `submitIntent()`
-- ✅ Atomic check-and-mint (no TOCTOU)
-- ✅ Events log all compliance decisions
+- Compliance check in `executeMint()`, not just `submitIntent()`
+- Atomic check-and-mint (no TOCTOU)
+- Events log all compliance decisions
 
 ```solidity
 function executeMint(bytes32 intentId) external {
     MintIntent storage intent = intents[intentId];
     
-    // ✅ Check compliance at execution time
+    // Check compliance at execution time
     require(userRegistry.isCompliant(intent.user), "User not compliant");
     
     _mint(intent.user, intent.amount);
@@ -483,9 +483,9 @@ User provides fake attestation hash (e.g., hash of random data).
 **Impact:** High (non-KYC'd users get access)
 
 **Mitigation:**
-- ✅ Attestation hash is hash of signed ZK proof or doc
-- ✅ On-chain: only verify hash existence (not content)
-- ✅ Off-chain: compliance officer verifies original doc
+- Attestation hash is hash of signed ZK proof or doc
+- On-chain: only verify hash existence (not content)
+- Off-chain: compliance officer verifies original doc
 - 🔄 Future: ZK proofs for privacy-preserving KYC
 
 **Testing:**
@@ -504,9 +504,9 @@ NPM/cargo package with known vulnerability (e.g., prototype pollution).
 **Impact:** Varies (RCE in worst case)
 
 **Mitigation:**
-- ✅ `npm audit` / `cargo audit` in CI
-- ✅ Dependabot for auto-updates
-- ✅ Pin exact versions in `package-lock.json`
+- `npm audit` / `cargo audit` in CI
+- Dependabot for auto-updates
+- Pin exact versions in `package-lock.json`
 
 **Testing:**
 - CI fails on high/critical vulnerabilities
@@ -551,14 +551,14 @@ Reentrancy Upgrade                HMAC     Key
 
 | Threat ID | Category | Severity | Mitigation Status |
 |-----------|----------|----------|-------------------|
-| T-001 | Reentrancy | 🔴 | ✅ Mitigated |
-| T-002 | Upgrade Brick | 🔴 | ✅ Mitigated |
-| T-003 | Role Escalation | 🔴 | ✅ Mitigated |
-| T-101 | HMAC Forgery | 🔴 | ✅ Mitigated |
-| T-102 | Replay Attack | 🟡 | ✅ Mitigated |
-| T-201 | Key Leakage | 🔴 | ✅ Mitigated |
-| T-203 | Chain Reorg | 🟡 | ⚠️ Partially (needs confirmation depth) |
-| T-301 | Compliance Bypass | 🔴 | ✅ Mitigated |
+| T-001 | Reentrancy | 🔴 | Mitigated |
+| T-002 | Upgrade Brick | 🔴 | Mitigated |
+| T-003 | Role Escalation | 🔴 | Mitigated |
+| T-101 | HMAC Forgery | 🔴 | Mitigated |
+| T-102 | Replay Attack | 🟡 | Mitigated |
+| T-201 | Key Leakage | 🔴 | Mitigated |
+| T-203 | Chain Reorg | 🟡 | Partially (needs confirmation depth) |
+| T-301 | Compliance Bypass | 🔴 | Mitigated |
 
 ---
 
