@@ -221,14 +221,14 @@
 **Goal:** Complete all required documentation
 
 #### 5.1 ADR.md - Architecture Decision Records (45 min)
-- [ ] Document: UUPS vs Transparent proxy choice
-- [ ] Document: Event schema design (which fields indexed, why)
-- [ ] Document: Idempotency strategy (storage, TTL, key format)
-- [ ] Document: Key management approach (HMAC secrets, private keys)
-- [ ] Document: Database choice and schema
-- [ ] Document: Retry/backoff parameters
-- [ ] Add diagrams if helpful
-- [ ] Git commit: "docs: complete architecture decision records"
+- [x] Document: UUPS vs Transparent proxy choice
+- [x] Document: Event schema design (which fields indexed, why)
+- [x] Document: Idempotency strategy (storage, TTL, key format)
+- [x] Document: Key management approach (HMAC secrets, private keys)
+- [x] Document: Database choice and schema
+- [x] Document: Retry/backoff parameters
+- [x] Add diagrams if helpful
+- [x] Git commit: "docs: complete architecture decision records"
 
 #### 5.2 THREAT_MODEL.md (45 min)
 - [ ] **On-chain threats:**
