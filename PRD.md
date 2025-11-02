@@ -168,52 +168,52 @@
 **Goal:** Docker deployment with monitoring and CI/CD
 
 #### 4.1 Docker Configuration (1 hour)
-- [ ] Create Dockerfile for API service
-- [ ] Create `docker-compose.yml` with all services:
-  - [ ] API service
-  - [ ] Anvil (local Ethereum node)
-  - [ ] PostgreSQL (or use SQLite)
-  - [ ] Redis (optional, for caching)
-  - [ ] Prometheus
-  - [ ] Grafana
-- [ ] Add health checks for all services
-- [ ] Configure service dependencies
-- [ ] Create `.env.example` file
-- [ ] Test: `docker compose up` should start everything
-- [ ] Git commit: "ops: add Docker Compose configuration"
+- [x] Create Dockerfile for API service
+- [x] Create `docker-compose.yml` with all services:
+  - [x] API service
+  - [x] Anvil (local Ethereum node)
+  - [x] PostgreSQL (or use SQLite)
+  - [x] Redis (optional, for caching)
+  - [x] Prometheus
+  - [x] Grafana
+- [x] Add health checks for all services
+- [x] Configure service dependencies
+- [x] Create `.env.example` file
+- [x] Test: `docker compose up` should start everything
+- [x] Git commit: "ops: add Docker Compose configuration"
 
 #### 4.2 Prometheus Configuration (30 min)
-- [ ] Create `ops/prometheus.yml`
-- [ ] Configure scrape targets (API /metrics endpoint)
-- [ ] Set scrape intervals
-- [ ] Add recording rules (optional)
-- [ ] Create `ops/alerts.yml` with alert rules
-- [ ] Test metrics collection
-- [ ] Git commit: "ops: configure Prometheus with alert rules"
+- [x] Create `ops/prometheus.yml`
+- [x] Configure scrape targets (API /metrics endpoint)
+- [x] Set scrape intervals
+- [x] Add recording rules (optional)
+- [x] Create `ops/alerts.yml` with alert rules
+- [x] Test metrics collection
+- [x] Git commit: "ops: configure Prometheus with alert rules"
 
 #### 4.3 Grafana Dashboard (45 min)
-- [ ] Create `ops/grafana/` directory
-- [ ] Configure Grafana data source (Prometheus)
-- [ ] Create dashboard JSON with panels:
-  - [ ] RPC error rate (5m window)
-  - [ ] p95 latency for RPC and API
-  - [ ] DLQ depth over time
-  - [ ] Successful mint rate
-  - [ ] Visual alerts for thresholds
-- [ ] Add dashboard provisioning config
-- [ ] Test dashboard displays metrics
-- [ ] Git commit: "ops: create Grafana dashboard with key metrics"
+- [x] Create `ops/grafana/` directory
+- [x] Configure Grafana data source (Prometheus)
+- [x] Create dashboard JSON with panels:
+  - [x] RPC error rate (5m window)
+  - [x] p95 latency for RPC and API
+  - [x] DLQ depth over time
+  - [x] Successful mint rate
+  - [x] Visual alerts for thresholds
+- [x] Add dashboard provisioning config
+- [x] Test dashboard displays metrics
+- [x] Git commit: "ops: create Grafana dashboard with key metrics"
 
 #### 4.4 CI/CD Pipeline (45 min)
-- [ ] Create `.github/workflows/ci.yml`
-- [ ] Add job: Run Foundry tests
-- [ ] Add job: Run Solidity linter (forge fmt --check)
-- [ ] Add job: Run API linter (eslint/golint)
-- [ ] Add job: Generate gas report (forge snapshot)
-- [ ] Add job: Build Docker images
-- [ ] Ensure all checks must pass
-- [ ] Test CI pipeline runs
-- [ ] Git commit: "ci: add GitHub Actions workflow"
+- [x] Create `.github/workflows/ci.yml`
+- [x] Add job: Run Foundry tests
+- [x] Add job: Run Solidity linter (forge fmt --check)
+- [x] Add job: Run API linter (eslint/golint)
+- [x] Add job: Generate gas report (forge snapshot)
+- [x] Add job: Build Docker images
+- [x] Ensure all checks must pass
+- [x] Test CI pipeline runs
+- [x] Git commit: "ci: add GitHub Actions workflow"
 
 ---
 
