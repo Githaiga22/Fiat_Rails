@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+.env
+.env.local
+.env.*.local
+*.db
+*.json.bak
+data/
+.git
+.gitignore
+README.md
+test/
+*.test.js
+coverage/
+.nyc_output/
