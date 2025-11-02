@@ -13,26 +13,26 @@
 **Goal:** Get the development environment ready and understand the architecture
 
 #### 1.1 Environment Setup
-- [x] ✅ Review `seed.json` file and note unique values (chain ID: 31382, country code: KES, token symbols: USDT/KES)
-- [x] ✅ Install Foundry toolchain (v1.2.3-stable already installed)
-- [x] ✅ Initialize Foundry project structure (`forge init contracts`)
-- [x] ✅ Set up API project directory (Node.js v22.14.0, package.json created)
-- [x] ✅ Install Docker and Docker Compose (Docker v27.5.1 already installed)
-- [x] ✅ Create basic `.gitignore` file
-- [x] ✅ Initialize git repository if not already done
+- [x] Review `seed.json` file and note unique values (chain ID: 31382, country code: KES, token symbols: USDT/KES)
+- [x] Install Foundry toolchain (v1.2.3-stable already installed)
+- [x] Initialize Foundry project structure (`forge init contracts`)
+- [x] Set up API project directory (Node.js v22.14.0, package.json created)
+- [x] Install Docker and Docker Compose (Docker v27.5.1 already installed)
+- [x] Create basic `.gitignore` file
+- [x] Initialize git repository if not already done
 
 #### 1.2 Architecture Planning
-- [x] ✅ Read through all requirements in README.md, Test-Readme.md, and PRD.md
-- [x] ✅ Sketch system architecture diagram (reviewed from README.md)
-- [x] ✅ Identify all components and their interactions (reviewed interfaces and openapi.yaml)
-- [x] ✅ List all required events and their indexed fields (from IComplianceManager, IMintEscrow)
-- [x] ✅ Plan database schema for idempotency keys (reviewed from ADR template)
+- [x] Read through all requirements in README.md, Test-Readme.md, and PRD.md
+- [x] Sketch system architecture diagram (reviewed from README.md)
+- [x] Identify all components and their interactions (reviewed interfaces and openapi.yaml)
+- [x] List all required events and their indexed fields (from IComplianceManager, IMintEscrow)
+- [x] Plan database schema for idempotency keys (reviewed from ADR template)
 
 #### 1.3 Documentation Foundation
-- [x] ✅ Create `/docs` directory
-- [x] ✅ Create `ADR.md`, `THREAT_MODEL.md`, `RUNBOOK.md` (from templates)
-- [x] ✅ Start documenting initial architecture decisions (templates ready to fill)
-- [x] ✅ Git commit: "chore: initialize project structure with Foundry and API setup"
+- [x] Create `/docs` directory
+- [x] Create `ADR.md`, `THREAT_MODEL.md`, `RUNBOOK.md` (from templates)
+- [x] Start documenting initial architecture decisions (templates ready to fill)
+- [x] Git commit: "chore: initialize project structure with Foundry and API setup"
 
 ---
 
@@ -40,62 +40,62 @@
 **Goal:** Build and test all required smart contracts
 
 #### 2.1 USDStablecoin Mock (15 min)
-- [x] ✅ Create `USDStablecoin.sol` - basic ERC20 with 18 decimals
-- [x] ✅ Add pre-mint function for testing
-- [x] ✅ Write basic unit tests
-- [x] ✅ Git commit: "feat: implement USD stablecoin mock"
+- [x] Create `USDStablecoin.sol` - basic ERC20 with 18 decimals
+- [x] Add pre-mint function for testing
+- [x] Write basic unit tests
+- [x] Git commit: "feat: implement USD stablecoin mock"
 
 #### 2.2 CountryToken (20 min)
-- [x] ✅ Create `CountryToken.sol` - ERC20 using seed.json country code as symbol
-- [x] ✅ Implement minter role mechanism
-- [x] ✅ Add 18 decimals
-- [x] ✅ Write unit tests for minting permissions
-- [x] ✅ Git commit: "feat: implement country token with role-based minting"
+- [x] Create `CountryToken.sol` - ERC20 using seed.json country code as symbol
+- [x] Implement minter role mechanism
+- [x] Add 18 decimals
+- [x] Write unit tests for minting permissions
+- [x] Git commit: "feat: implement country token with role-based minting"
 
 #### 2.3 UserRegistry Contract (45 min)
-- [x] ✅ Create `UserRegistry.sol`
-- [x] ✅ Implement storage for risk scores (uint8, 0-100)
-- [x] ✅ Implement storage for attestation hashes
-- [x] ✅ Add role-based access control for writes
-- [x] ✅ Implement query interface for compliance checks
-- [x] ✅ Emit `UserRiskUpdated` event with proper indexing
-- [x] ✅ Emit `AttestationRecorded` event with proper indexing
-- [x] ✅ Write unit tests (happy path)
-- [x] ✅ Write fuzz tests for risk score boundaries
-- [x] ✅ Git commit: "feat: implement UserRegistry with risk scoring"
+- [x] Create `UserRegistry.sol`
+- [x] Implement storage for risk scores (uint8, 0-100)
+- [x] Implement storage for attestation hashes
+- [x] Add role-based access control for writes
+- [x] Implement query interface for compliance checks
+- [x] Emit `UserRiskUpdated` event with proper indexing
+- [x] Emit `AttestationRecorded` event with proper indexing
+- [x] Write unit tests (happy path)
+- [x] Write fuzz tests for risk score boundaries
+- [x] Git commit: "feat: implement UserRegistry with risk scoring"
 
 #### 2.4 ComplianceManager Contract (1 hour)
-- [x] ✅ Create `ComplianceManager.sol` with UUPS upgradeability
-- [x] ✅ Implement role-based access control (ADMIN, COMPLIANCE_OFFICER, UPGRADER)
-- [x] ✅ Add Pausable mechanism
-- [x] ✅ Write logic to check user compliance status
-- [x] ✅ Ensure all events are properly indexed
-- [x] ✅ Write unit tests for all roles
-- [x] ✅ Write upgrade tests (test upgradeability)
-- [x] ✅ Test pause mechanism
-- [x] ✅ Document ADR decision: Why UUPS vs Transparent proxy
-- [x] ✅ Git commit: "feat: implement ComplianceManager with UUPS upgradeability"
+- [x] Create `ComplianceManager.sol` with UUPS upgradeability
+- [x] Implement role-based access control (ADMIN, COMPLIANCE_OFFICER, UPGRADER)
+- [x] Add Pausable mechanism
+- [x] Write logic to check user compliance status
+- [x] Ensure all events are properly indexed
+- [x] Write unit tests for all roles
+- [x] Write upgrade tests (test upgradeability)
+- [x] Test pause mechanism
+- [x] Document ADR decision: Why UUPS vs Transparent proxy
+- [x] Git commit: "feat: implement ComplianceManager with UUPS upgradeability"
 
 #### 2.5 MintEscrow Contract (1.5 hours)
-- [x] ✅ Create `MintEscrow.sol`
-- [x] ✅ Implement deposit intent submission
-- [x] ✅ Add UserRegistry compliance check before minting
-- [x] ✅ Implement 1:1 minting logic for compliant users
-- [x] ✅ Add idempotency mechanism (prevent double-execution)
-- [x] ✅ Implement refund logic for non-compliant users
-- [x] ✅ Emit `MintIntentSubmitted` event
-- [x] ✅ Emit `MintExecuted` event
-- [x] ✅ Write unit tests for all functions
-- [x] ✅ Write integration tests (multi-contract flows)
-- [x] ✅ Write fuzz tests for amounts and edge cases
-- [x] ✅ Git commits: 11 incremental commits showing natural progression
+- [x] Create `MintEscrow.sol`
+- [x] Implement deposit intent submission
+- [x] Add UserRegistry compliance check before minting
+- [x] Implement 1:1 minting logic for compliant users
+- [x] Add idempotency mechanism (prevent double-execution)
+- [x] Implement refund logic for non-compliant users
+- [x] Emit `MintIntentSubmitted` event
+- [x] Emit `MintExecuted` event
+- [x] Write unit tests for all functions
+- [x] Write integration tests (multi-contract flows)
+- [x] Write fuzz tests for amounts and edge cases
+- [x] Git commits: 11 incremental commits showing natural progression
 
 #### 2.6 Contract Testing & Coverage (45 min)
-- [x] ✅ Run all tests: `forge test` (107 tests passing)
-- [x] ✅ Generate coverage report: `forge coverage`
-- [x] ✅ Ensure >80% test coverage (achieved 94.26%)
+- [x] Run all tests: `forge test` (107 tests passing)
+- [x] Generate coverage report: `forge coverage`
+- [x] Ensure >80% test coverage (achieved 94.26%)
 - [ ] Generate gas snapshots: `forge snapshot`
-- [x] ✅ Add negative test cases (unauthorized access, invalid inputs)
+- [x] Add negative test cases (unauthorized access, invalid inputs)
 - [ ] Document gas optimization decisions in ADR
 
 ---
@@ -104,63 +104,63 @@
 **Goal:** Build resilient API with idempotency and retry logic
 
 #### 3.1 API Foundation (30 min)
-- [x] ✅ Set up Express.js with Node.js ESM
-- [x] ✅ Set up environment variables management (dotenv)
-- [x] ✅ Configure database connection (SQLite with better-sqlite3)
-- [x] ✅ Create database schema for idempotency keys
-- [x] ✅ Set up Web3 provider connection (ethers.js v6)
-- [x] ✅ Git commits: package.json, config, database, blockchain modules
+- [x] Set up Express.js with Node.js ESM
+- [x] Set up environment variables management (dotenv)
+- [x] Configure database connection (SQLite with better-sqlite3)
+- [x] Create database schema for idempotency keys
+- [x] Set up Web3 provider connection (ethers.js v6)
+- [x] Git commits: package.json, config, database, blockchain modules
 
 #### 3.2 HMAC Verification Middleware (30 min)
-- [x] ✅ Implement HMAC signature generation function
-- [x] ✅ Implement HMAC signature verification middleware
-- [x] ✅ Add timestamp freshness check (reject old requests)
-- [x] ✅ Write tests for HMAC verification (13 tests passing)
-- [x] ✅ Git commits: HMAC utility, middleware, tests
+- [x] Implement HMAC signature generation function
+- [x] Implement HMAC signature verification middleware
+- [x] Add timestamp freshness check (reject old requests)
+- [x] Write tests for HMAC verification (13 tests passing)
+- [x] Git commits: HMAC utility, middleware, tests
 
 #### 3.3 Idempotency System (45 min)
-- [x] ✅ Create idempotency keys table in database
-- [x] ✅ Implement idempotency middleware (check X-Idempotency-Key)
-- [x] ✅ Store request/response in database
-- [x] ✅ Return cached response for duplicate keys
-- [x] ✅ Add TTL for cleanup (86400 seconds from seed.json)
-- [x] ✅ Git commit: "feat: implement idempotency system with database"
+- [x] Create idempotency keys table in database
+- [x] Implement idempotency middleware (check X-Idempotency-Key)
+- [x] Store request/response in database
+- [x] Return cached response for duplicate keys
+- [x] Add TTL for cleanup (86400 seconds from seed.json)
+- [x] Git commit: "feat: implement idempotency system with database"
 
 #### 3.4 POST /mint-intents Endpoint (30 min)
-- [x] ✅ Create endpoint handler
-- [x] ✅ Validate request body (amount, countryCode, txRef, userAddress)
-- [x] ✅ Apply idempotency middleware
-- [x] ✅ Apply HMAC verification
-- [x] ✅ Submit transaction to MintEscrow contract
-- [x] ✅ Return intent ID
-- [x] ✅ Add error handling with retry queue
-- [x] ✅ Git commit: "feat: implement /mint-intents endpoint"
+- [x] Create endpoint handler
+- [x] Validate request body (amount, countryCode, txRef, userAddress)
+- [x] Apply idempotency middleware
+- [x] Apply HMAC verification
+- [x] Submit transaction to MintEscrow contract
+- [x] Return intent ID
+- [x] Add error handling with retry queue
+- [x] Git commit: "feat: implement /mint-intents endpoint"
 
 #### 3.5 Retry & DLQ System (1 hour)
-- [x] ✅ Implement exponential backoff function (691ms initial, 2x multiplier, 30s max)
-- [x] ✅ Create retry queue mechanism (SQLite table)
-- [x] ✅ Implement dead-letter queue (DLQ) - JSON file storage
-- [x] ✅ Add RPC failure handling (graceful degradation)
-- [x] ✅ Write tests for retry logic (8 exponential backoff tests)
-- [x] ✅ Git commits: retry system, tests
+- [x] Implement exponential backoff function (691ms initial, 2x multiplier, 30s max)
+- [x] Create retry queue mechanism (SQLite table)
+- [x] Implement dead-letter queue (DLQ) - JSON file storage
+- [x] Add RPC failure handling (graceful degradation)
+- [x] Write tests for retry logic (8 exponential backoff tests)
+- [x] Git commits: retry system, tests
 
 #### 3.6 POST /callbacks/mpesa Endpoint (45 min)
-- [x] ✅ Create webhook endpoint handler
-- [x] ✅ Verify HMAC signature (X-Mpesa-Signature header)
-- [x] ✅ Check timestamp freshness
-- [x] ✅ Check user compliance before minting
-- [x] ✅ Call `escrow.executeMint(intentId)` with retry logic
-- [x] ✅ Handle RPC failures with backoff
-- [x] ✅ Move to DLQ after exhausting retries
-- [x] ✅ Git commit: "feat: implement M-PESA callback webhook with retry"
+- [x] Create webhook endpoint handler
+- [x] Verify HMAC signature (X-Mpesa-Signature header)
+- [x] Check timestamp freshness
+- [x] Check user compliance before minting
+- [x] Call `escrow.executeMint(intentId)` with retry logic
+- [x] Handle RPC failures with backoff
+- [x] Move to DLQ after exhausting retries
+- [x] Git commit: "feat: implement M-PESA callback webhook with retry"
 
 #### 3.7 Health & Metrics Endpoints (30 min)
-- [x] ✅ Create GET /health endpoint (service status, RPC connectivity, queue depth)
-- [x] ✅ Install Prometheus client library (prom-client)
-- [x] ✅ Implement metrics collection (counters, gauges, histograms)
-- [x] ✅ Create GET /metrics endpoint (Prometheus format)
-- [x] ✅ Add required metrics: RPC requests, mint intents, callbacks, DLQ depth, retries, compliance checks, latency
-- [x] ✅ Git commit: "feat: add health and Prometheus metrics endpoints"
+- [x] Create GET /health endpoint (service status, RPC connectivity, queue depth)
+- [x] Install Prometheus client library (prom-client)
+- [x] Implement metrics collection (counters, gauges, histograms)
+- [x] Create GET /metrics endpoint (Prometheus format)
+- [x] Add required metrics: RPC requests, mint intents, callbacks, DLQ depth, retries, compliance checks, latency
+- [x] Git commit: "feat: add health and Prometheus metrics endpoints"
 
 ---
 
