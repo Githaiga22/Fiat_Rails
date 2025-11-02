@@ -1,0 +1,114 @@
+groups:
+  - name: fiatrails_api_alerts
+    interval: 30s
+    rules:
+      # High RPC error rate
+      - alert: HighRPCErrorRate
+        expr: |
+          (
+            sum(rate(fiatrails_rpc_requests_total{status="error"}[5m]))
+            /
+            sum(rate(fiatrails_rpc_requests_total[5m]))
+          ) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          component: rpc
+        annotations:
+          summary: "High RPC error rate detected"
+          description: "RPC error rate is {{ $value | humanizePercentage }} over the last 5 minutes (threshold: 10%)"
+
+      # RPC latency too high
+      - alert: HighRPCLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(fiatrails_rpc_call_duration_seconds_bucket[5m])) by (le, method)
+          ) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: rpc
+        annotations:
+          summary: "High RPC latency detected"
+          description: "P95 RPC latency for {{ $labels.method }} is {{ $value }}s (threshold: 5s)"
+
+      # Dead Letter Queue growing
+      - alert: DLQDepthIncreasing
+        expr: fiatrails_dlq_depth > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: dlq
+        annotations:
+          summary: "Dead Letter Queue depth is high"
+          description: "DLQ has {{ $value }} items. Manual investigation may be required."
+
+      # Retry queue backlog
+      - alert: RetryQueueBacklog
+        expr: fiatrails_retry_queue_depth > 100
+        for: 10m
+        labels:
+          severity: warning
+          component: retry
+        annotations:
+          summary: "Retry queue has significant backlog"
+          description: "Retry queue depth is {{ $value }} (threshold: 100). Check RPC connectivity."
+
+      # API service down
+      - alert: APIServiceDown
+        expr: up{job="fiatrails-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "FiatRails API service is down"
+          description: "The API service has been down for more than 1 minute."
+
+      # Low mint success rate
+      - alert: LowMintSuccessRate
+        expr: |
+          (
+            sum(rate(fiatrails_mint_intents_total{status="success"}[5m]))
+            /
+            sum(rate(fiatrails_mint_intents_total[5m]))
+          ) < 0.8
+        for: 10m
+        labels:
+          severity: warning
+          component: minting
+        annotations:
+          summary: "Low mint success rate"
+          description: "Mint success rate is {{ $value | humanizePercentage }} (threshold: 80%)"
+
+      # Compliance check failures
+      - alert: HighComplianceFailureRate
+        expr: |
+          (
+            sum(rate(fiatrails_compliance_checks_total{result="failed"}[5m]))
+            /
+            sum(rate(fiatrails_compliance_checks_total[5m]))
+          ) > 0.5
+        for: 15m
+        labels:
+          severity: info
+          component: compliance
+        annotations:
+          summary: "High compliance failure rate"
+          description: "{{ $value | humanizePercentage }} of compliance checks are failing. This may be expected behavior."
+
+      # High callback error rate
+      - alert: HighCallbackErrorRate
+        expr: |
+          (
+            sum(rate(fiatrails_callbacks_total{result="error"}[5m]))
+            /
+            sum(rate(fiatrails_callbacks_total[5m]))
+          ) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          component: callbacks
+        annotations:
+          summary: "High M-PESA callback error rate"
+          description: "Callback error rate is {{ $value | humanizePercentage }} (threshold: 20%)"
