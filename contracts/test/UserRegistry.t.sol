@@ -27,9 +27,7 @@ contract UserRegistryTest is Test {
     bytes32 public constant TEST_ATTESTATION = keccak256("KYC_DOCUMENT_HASH");
 
     /// @notice Event declarations for testing
-    event UserComplianceUpdated(
-        address indexed user, uint8 riskScore, bytes32 attestationHash, bool isVerified
-    );
+    event UserComplianceUpdated(address indexed user, uint8 riskScore, bytes32 attestationHash, bool isVerified);
 
     /**
      * @notice Set up test environment before each test

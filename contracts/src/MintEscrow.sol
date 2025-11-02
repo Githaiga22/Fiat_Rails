@@ -23,12 +23,7 @@ contract MintEscrow is IMintEscrow, AccessControl, ReentrancyGuard {
 
     mapping(bytes32 => MintIntent) private intents;
 
-    constructor(
-        address _usdStablecoin,
-        address _countryToken,
-        address _userRegistry,
-        bytes32 _countryCode
-    ) {
+    constructor(address _usdStablecoin, address _countryToken, address _userRegistry, bytes32 _countryCode) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(EXECUTOR_ROLE, msg.sender);
 
@@ -45,11 +40,11 @@ contract MintEscrow is IMintEscrow, AccessControl, ReentrancyGuard {
      * @param txRef Off-chain transaction reference
      * @return intentId Unique intent identifier
      */
-    function submitIntent(
-        uint256 amount,
-        bytes32 _countryCode,
-        bytes32 txRef
-    ) external nonReentrant returns (bytes32 intentId) {
+    function submitIntent(uint256 amount, bytes32 _countryCode, bytes32 txRef)
+        external
+        nonReentrant
+        returns (bytes32 intentId)
+    {
         if (amount == 0) revert InvalidAmount();
         if (_countryCode != countryCode) revert InvalidCountryCode();
 

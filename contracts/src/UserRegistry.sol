@@ -31,12 +31,10 @@ contract UserRegistry is IUserRegistry, AccessControl {
      * @param attestationHash Hash of compliance documentation
      * @param isVerified KYC verification status
      */
-    function updateUser(
-        address user,
-        uint8 riskScore,
-        bytes32 attestationHash,
-        bool isVerified
-    ) external onlyRole(COMPLIANCE_OFFICER_ROLE) {
+    function updateUser(address user, uint8 riskScore, bytes32 attestationHash, bool isVerified)
+        external
+        onlyRole(COMPLIANCE_OFFICER_ROLE)
+    {
         if (riskScore > 100) {
             revert InvalidRiskScore();
         }
@@ -67,9 +65,8 @@ contract UserRegistry is IUserRegistry, AccessControl {
      */
     function isCompliant(address user) external view returns (bool) {
         UserCompliance memory compliance = users[user];
-        return compliance.isVerified &&
-            compliance.riskScore <= MAX_RISK_SCORE &&
-            compliance.attestationHash != bytes32(0);
+        return
+            compliance.isVerified && compliance.riskScore <= MAX_RISK_SCORE && compliance.attestationHash != bytes32(0);
     }
 
     /**

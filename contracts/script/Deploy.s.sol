@@ -54,11 +54,8 @@ contract Deploy is Script {
         complianceManagerImpl = new ComplianceManager();
         console.log("ComplianceManager implementation:", address(complianceManagerImpl));
 
-        bytes memory initData = abi.encodeWithSelector(
-            ComplianceManager.initialize.selector,
-            deployer,
-            address(userRegistry)
-        );
+        bytes memory initData =
+            abi.encodeWithSelector(ComplianceManager.initialize.selector, deployer, address(userRegistry));
 
         ERC1967Proxy proxy = new ERC1967Proxy(address(complianceManagerImpl), initData);
         complianceManager = ComplianceManager(address(proxy));
@@ -66,12 +63,7 @@ contract Deploy is Script {
 
         // 5. Deploy MintEscrow
         console.log("\n5. Deploying MintEscrow...");
-        mintEscrow = new MintEscrow(
-            address(usdStablecoin),
-            address(countryToken),
-            address(userRegistry),
-            COUNTRY_CODE
-        );
+        mintEscrow = new MintEscrow(address(usdStablecoin), address(countryToken), address(userRegistry), COUNTRY_CODE);
         console.log("MintEscrow deployed at:", address(mintEscrow));
 
         // 6. Configure roles and permissions
@@ -105,17 +97,31 @@ contract Deploy is Script {
         // 9. Write deployment addresses to JSON file
         console.log("\n9. Writing deployments.json...");
         string memory json = string.concat(
-            '{\n',
-            '  "deployer": "', vm.toString(deployer), '",\n',
-            '  "usdStablecoin": "', vm.toString(address(usdStablecoin)), '",\n',
-            '  "countryToken": "', vm.toString(address(countryToken)), '",\n',
-            '  "userRegistry": "', vm.toString(address(userRegistry)), '",\n',
-            '  "complianceManager": "', vm.toString(address(complianceManager)), '",\n',
-            '  "mintEscrow": "', vm.toString(address(mintEscrow)), '",\n',
+            "{\n",
+            '  "deployer": "',
+            vm.toString(deployer),
+            '",\n',
+            '  "usdStablecoin": "',
+            vm.toString(address(usdStablecoin)),
+            '",\n',
+            '  "countryToken": "',
+            vm.toString(address(countryToken)),
+            '",\n',
+            '  "userRegistry": "',
+            vm.toString(address(userRegistry)),
+            '",\n',
+            '  "complianceManager": "',
+            vm.toString(address(complianceManager)),
+            '",\n',
+            '  "mintEscrow": "',
+            vm.toString(address(mintEscrow)),
+            '",\n',
             '  "network": "lisk-sepolia",\n',
             '  "chainId": 4202,\n',
-            '  "timestamp": ', vm.toString(block.timestamp), '\n',
-            '}'
+            '  "timestamp": ',
+            vm.toString(block.timestamp),
+            "\n",
+            "}"
         );
 
         vm.writeFile("../deployments.json", json);

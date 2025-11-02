@@ -29,7 +29,9 @@ contract ComplianceManagerTest is Test {
     bytes32 public constant ATTESTATION_TYPE_KYC = keccak256("KYC");
 
     event UserRiskUpdated(address indexed user, uint8 newRiskScore, address indexed updatedBy, uint256 timestamp);
-    event AttestationRecorded(address indexed user, bytes32 indexed attestationHash, bytes32 attestationType, address indexed recordedBy);
+    event AttestationRecorded(
+        address indexed user, bytes32 indexed attestationHash, bytes32 attestationType, address indexed recordedBy
+    );
 
     function setUp() public {
         admin = address(this);
@@ -41,11 +43,7 @@ contract ComplianceManagerTest is Test {
         registry.addComplianceOfficer(address(this));
 
         implementation = new ComplianceManager();
-        bytes memory initData = abi.encodeWithSelector(
-            ComplianceManager.initialize.selector,
-            admin,
-            address(registry)
-        );
+        bytes memory initData = abi.encodeWithSelector(ComplianceManager.initialize.selector, admin, address(registry));
         proxy = new ERC1967Proxy(address(implementation), initData);
         manager = ComplianceManager(address(proxy));
 

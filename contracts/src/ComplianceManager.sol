@@ -73,11 +73,11 @@ contract ComplianceManager is
      * @param attestationHash Hash of attestation document
      * @param attestationType Type identifier
      */
-    function recordAttestation(
-        address user,
-        bytes32 attestationHash,
-        bytes32 attestationType
-    ) external whenNotPaused onlyRole(COMPLIANCE_OFFICER) {
+    function recordAttestation(address user, bytes32 attestationHash, bytes32 attestationType)
+        external
+        whenNotPaused
+        onlyRole(COMPLIANCE_OFFICER)
+    {
         if (attestationHash == bytes32(0)) {
             revert InvalidAttestation();
         }

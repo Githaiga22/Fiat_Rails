@@ -29,25 +29,12 @@ contract MintEscrowTest is Test {
     bytes32 public constant TX_REF_2 = keccak256("TX_002");
 
     event MintIntentSubmitted(
-        bytes32 indexed intentId,
-        address indexed user,
-        uint256 amount,
-        bytes32 indexed countryCode,
-        bytes32 txRef
+        bytes32 indexed intentId, address indexed user, uint256 amount, bytes32 indexed countryCode, bytes32 txRef
     );
     event MintExecuted(
-        bytes32 indexed intentId,
-        address indexed user,
-        uint256 amount,
-        bytes32 indexed countryCode,
-        bytes32 txRef
+        bytes32 indexed intentId, address indexed user, uint256 amount, bytes32 indexed countryCode, bytes32 txRef
     );
-    event MintRefunded(
-        bytes32 indexed intentId,
-        address indexed user,
-        uint256 amount,
-        string reason
-    );
+    event MintRefunded(bytes32 indexed intentId, address indexed user, uint256 amount, string reason);
 
     function setUp() public {
         admin = address(this);
@@ -59,12 +46,7 @@ contract MintEscrowTest is Test {
         countryToken = new CountryToken();
         registry = new UserRegistry();
 
-        escrow = new MintEscrow(
-            address(usd),
-            address(countryToken),
-            address(registry),
-            COUNTRY_CODE
-        );
+        escrow = new MintEscrow(address(usd), address(countryToken), address(registry), COUNTRY_CODE);
 
         countryToken.addMinter(address(escrow));
         registry.addComplianceOfficer(admin);
