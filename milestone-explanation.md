@@ -1494,4 +1494,96 @@ Created 8 production-grade alerts:
 
 ---
 
+### 4.3 Grafana Dashboard COMPLETED
+
+#### What Was Built
+Production-ready Grafana dashboard with 8 visualization panels and auto-provisioning.
+
+#### Implementation Details
+
+**Provisioning Configuration:**
+- Datasource: ops/grafana/provisioning/datasources/prometheus.yml
+  - Type: Prometheus, URL: http://prometheus:9090, Access: proxy
+- Dashboard: ops/grafana/provisioning/dashboards/dashboard.yml
+  - Auto-imports JSON from ops/grafana/dashboards/
+
+**Dashboard Panels (ops/grafana/dashboards/fiatrails-overview.json):**
+
+1. RPC Error Rate (5m window): Graph with 10% threshold, red/yellow alerts
+2. RPC p95 Latency: Graph with 2s threshold
+3. API p95 Latency: Graph with 1s threshold
+4. DLQ Depth: Graph with single stat, red if > 10
+5. Retry Queue Depth: Gauge (green 0-30, yellow 30-70, red 70+)
+6. Successful Mint Rate: Graph with 95% target line
+7. Compliance Check Results: Pie chart (compliant vs rejected)
+8. RPC Requests by Method: Stacked area chart
+
+**Dashboard Features:**
+- Time range selector (last 15 minutes default)
+- Auto-refresh every 10 seconds
+- Variables for environment/service filtering
+- Links to Prometheus and RUNBOOK.md
+
+#### Git Commit
+- `ops: add Grafana dashboard and provisioning`
+
+#### Time Spent
+~45 minutes
+
+#### Design Decisions
+1. 8 panels: Covers all key metrics from Test-Readme.md, single-screen overview
+2. 5-minute windows: Smooths spikes, aligns with alert thresholds
+3. Auto-provisioning: `docker compose up` just works, version-controlled configuration
+
+---
+
+### 4.4 CI/CD Pipeline COMPLETED
+
+#### What Was Built
+GitHub Actions workflow with 4 parallel jobs and comprehensive automated checks.
+
+#### Implementation Details
+
+**Workflow File (.github/workflows/ci.yml):**
+- Trigger: Push to main, Pull requests to main
+- Jobs: 4 parallel jobs + 1 gating job
+
+**Job 1: Foundry Tests & Gas Report**
+- Steps: Checkout code, Install Foundry nightly, Run forge test -vvv
+- Generate coverage report and gas snapshot
+- Check gas snapshot diff (detect regressions)
+- Exclusions: `--no-match-path "script/**"`
+
+**Job 2: Solidity Linting**
+- Steps: Checkout, Install Foundry, Run `forge fmt --check`
+- Fails if code not formatted
+
+**Job 3: API Tests**
+- Steps: Checkout, Setup Node.js 22 with npm cache, npm ci, npm test
+- Cache: npm packages for speed
+
+**Job 4: Docker Build**
+- Dependencies: Waits for foundry-tests and api-tests to pass
+- Steps: Checkout, Setup Docker Buildx, Build API image
+- Push: false (only verify buildability)
+- Cache: GitHub Actions cache for layers
+
+**Job 5: All Checks Passed**
+- Dependencies: Waits for all 4 jobs above
+- Purpose: Single status check for branch protection
+
+#### Git Commit
+- `ci: add comprehensive GitHub Actions workflow`
+
+#### Time Spent
+~45 minutes
+
+#### Design Decisions
+1. Parallel jobs: Faster feedback (4 jobs run simultaneously)
+2. Nightly Foundry: Latest features, recommended for CI, auto-updates
+3. npm ci vs install: Faster, deterministic, production best practice
+4. Build but not push: Verifies Dockerfile is valid, prevents broken images
+
+---
+
 **Last Updated:** 2025-11-02 (Milestone 4 in progress)
