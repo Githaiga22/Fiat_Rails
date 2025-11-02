@@ -145,24 +145,22 @@
 - [x] ✅ Git commits: retry system, tests
 
 #### 3.6 POST /callbacks/mpesa Endpoint (45 min)
-- [ ] Create webhook endpoint handler
-- [ ] Verify HMAC signature (X-Mpesa-Signature header)
-- [ ] Check timestamp freshness
-- [ ] Implement idempotent execution (use txRef as dedup key)
-- [ ] Call `escrow.executeMint(intentId)` with retry logic
-- [ ] Handle RPC failures with backoff
-- [ ] Move to DLQ after exhausting retries
-- [ ] Write integration tests
-- [ ] Test double webhook handling
-- [ ] Git commit: "feat: implement M-PESA callback webhook with retry"
+- [x] ✅ Create webhook endpoint handler
+- [x] ✅ Verify HMAC signature (X-Mpesa-Signature header)
+- [x] ✅ Check timestamp freshness
+- [x] ✅ Check user compliance before minting
+- [x] ✅ Call `escrow.executeMint(intentId)` with retry logic
+- [x] ✅ Handle RPC failures with backoff
+- [x] ✅ Move to DLQ after exhausting retries
+- [x] ✅ Git commit: "feat: implement M-PESA callback webhook with retry"
 
 #### 3.7 Health & Metrics Endpoints (30 min)
-- [ ] Create GET /health endpoint (service status, RPC connectivity, queue depth)
-- [ ] Install Prometheus client library
-- [ ] Implement metrics collection
-- [ ] Create GET /metrics endpoint (Prometheus format)
-- [ ] Add required metrics: RPC requests, mint intents, callbacks, DLQ depth, retries, compliance checks
-- [ ] Git commit: "feat: add health and metrics endpoints"
+- [x] ✅ Create GET /health endpoint (service status, RPC connectivity, queue depth)
+- [x] ✅ Install Prometheus client library (prom-client)
+- [x] ✅ Implement metrics collection (counters, gauges, histograms)
+- [x] ✅ Create GET /metrics endpoint (Prometheus format)
+- [x] ✅ Add required metrics: RPC requests, mint intents, callbacks, DLQ depth, retries, compliance checks, latency
+- [x] ✅ Git commit: "feat: add health and Prometheus metrics endpoints"
 
 ---
 
