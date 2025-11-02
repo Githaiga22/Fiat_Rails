@@ -231,32 +231,32 @@
 - [x] Git commit: "docs: complete architecture decision records"
 
 #### 5.2 THREAT_MODEL.md (45 min)
-- [ ] **On-chain threats:**
-  - [ ] Reentrancy attacks and mitigations
-  - [ ] Replay attacks and mitigations
-  - [ ] Role escalation and mitigations
-  - [ ] Upgrade bricking and mitigations
-- [ ] **Off-chain threats:**
-  - [ ] HMAC forgery and mitigations
-  - [ ] Replay attacks and mitigations
-  - [ ] Nonce griefing and mitigations
-  - [ ] DDoS and mitigations
-- [ ] **Operational threats:**
-  - [ ] Key leakage and mitigations
-  - [ ] RPC censorship and mitigations
-  - [ ] Chain reorgs and mitigations
-- [ ] For each: likelihood, impact, mitigation
-- [ ] Git commit: "docs: complete threat model"
+- [x] **On-chain threats:**
+  - [x] Reentrancy attacks and mitigations
+  - [x] Replay attacks and mitigations
+  - [x] Role escalation and mitigations
+  - [x] Upgrade bricking and mitigations
+- [x] **Off-chain threats:**
+  - [x] HMAC forgery and mitigations
+  - [x] Replay attacks and mitigations
+  - [x] Nonce griefing and mitigations
+  - [x] DDoS and mitigations
+- [x] **Operational threats:**
+  - [x] Key leakage and mitigations
+  - [x] RPC censorship and mitigations
+  - [x] Chain reorgs and mitigations
+- [x] For each: likelihood, impact, mitigation
+- [x] Git commit: "docs: complete threat model"
 
 #### 5.3 RUNBOOK.md (30 min)
-- [ ] Document: How to rollback a bad contract upgrade
-- [ ] Document: How to rotate HMAC secret (zero downtime)
-- [ ] Document: How to process stuck DLQ items
-- [ ] Document: What to do if RPC is down (degraded mode)
-- [ ] Define SLOs: Availability, latency, error rate targets
-- [ ] Define alert rules: When to page on-call
-- [ ] Add troubleshooting steps for common issues
-- [ ] Git commit: "docs: complete operational runbook"
+- [x] Document: How to rollback a bad contract upgrade
+- [x] Document: How to rotate HMAC secret (zero downtime)
+- [x] Document: How to process stuck DLQ items
+- [x] Document: What to do if RPC is down (degraded mode)
+- [x] Define SLOs: Availability, latency, error rate targets
+- [x] Define alert rules: When to page on-call
+- [x] Add troubleshooting steps for common issues
+- [x] Git commit: "docs: complete operational runbook"
 
 ---
 
