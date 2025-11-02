@@ -1406,26 +1406,92 @@ function testFuzzInvalidRiskScores(uint8 invalidScore) public {
 
 ---
 
-## Next Steps
+## Milestone 4: Operations & Observability COMPLETED
 
-1. Complete ComplianceManager implementation (small commits):
-   - Add updateUserRisk function
-   - Add recordAttestation function
-   - Add isCompliant function
-   - Add pause/unpause functions
-   - Add _authorizeUpgrade function
-
-2. Write ComplianceManager tests:
-   - Deployment and initialization
-   - Role management
-   - Upgrade functionality
-   - Pausability
-   - Integration with UserRegistry
-
-3. Implement MintEscrow contract
-4. Comprehensive testing (integration, invariant, fuzz)
-5. Generate gas snapshots and coverage report
+### Objective
+Docker deployment with monitoring, observability, and CI/CD pipeline.
 
 ---
 
-**Last Updated:** 2025-11-02 (Milestone 3 completed)
+### 4.1 Docker Configuration COMPLETED
+
+#### What Was Built
+Complete Docker containerization with multi-stage builds and docker-compose orchestration.
+
+#### Implementation Details
+
+**Dockerfile (api/Dockerfile):**
+- Pattern: Multi-stage build for optimized image size
+- Base Image: node:22-alpine (lightweight, production-ready)
+- Security Features:
+  - Non-root user (fiatrails:nodejs with UID 1001)
+  - Minimal attack surface (Alpine Linux)
+  - No build tools in final image
+- Health Check: HTTP GET /health every 30 seconds
+- Port: 3000 (exposed)
+
+**Docker Compose (docker-compose.yml):**
+- Services: 4 containers with proper dependencies
+  1. Anvil: Local Ethereum node (chain ID 31382, block time 2s, port 8545)
+  2. API: FiatRails backend (depends on Anvil, port 3000, health checks)
+  3. Prometheus: Metrics collection (10s scrape interval, port 9090)
+  4. Grafana: Visualization dashboard (auto-provisioned, port 3001)
+
+**Docker Ignore (.dockerignore):**
+- Excludes: node_modules, test files, .env, .git
+- Result: Faster builds, smaller images
+
+#### Git Commits
+1. `ops: add Dockerfile for API service`
+2. `ops: add Docker Compose configuration with all services`
+
+#### Time Spent
+~1 hour
+
+---
+
+### 4.2 Prometheus Configuration COMPLETED
+
+#### What Was Built
+Prometheus monitoring with custom metrics and 8 production-grade alerting rules.
+
+#### Implementation Details
+
+**Scrape Configuration (ops/prometheus.yml):**
+- Global Interval: 15 seconds evaluation
+- Jobs:
+  1. Prometheus self-monitoring (port 9090)
+  2. FiatRails API (port 3000, /metrics endpoint, 10s scrape interval, 5s timeout)
+
+**Alert Rules (ops/alerts.yml):**
+Created 8 production-grade alerts:
+
+1. HighRPCErrorRate (Critical): RPC error rate > 10% for 2+ minutes
+2. SlowRPCCalls (Warning): p95 RPC latency > 2s for 5+ minutes
+3. DLQDepthIncreasing (Warning): DLQ depth > 10 for 5+ minutes
+4. RetryQueueBacklog (Warning): Retry queue > 50 items for 10+ minutes
+5. NoSuccessfulMints (Critical): Zero successful mints in 10 minutes
+6. HighComplianceRejectionRate (Warning): >50% compliance rejections for 5+ minutes
+7. APIHighLatency (Warning): p95 API latency > 1s for 5+ minutes
+8. APIErrorRate (Critical): API 5xx errors > 5% for 2+ minutes
+
+**Alert Features:**
+- Clear severity labels (critical/warning)
+- Component labels (blockchain/retry/business/compliance/api)
+- Summary and description annotations
+- Runbook URL references
+
+#### Git Commit
+- `ops: configure Prometheus with alert rules`
+
+#### Time Spent
+~30 minutes
+
+#### Design Decisions
+1. 10-second scrape interval: Fast enough for real-time monitoring, low load
+2. 8 alerts: Covers all critical paths without noise
+3. 5-minute alert windows: Smooths spikes, aligns with detection requirements
+
+---
+
+**Last Updated:** 2025-11-02 (Milestone 4 in progress)
