@@ -204,11 +204,11 @@ Access: http://localhost:3001 (admin/admin)
 #### CI/CD Pipeline
 
 GitHub Actions workflow (`.github/workflows/ci.yml`):
-- ✅ Run Foundry tests (107 tests)
-- ✅ Run API tests (35 tests)
-- ✅ Solidity linting (`forge fmt --check`)
-- ✅ Gas report generation (`forge snapshot`)
-- ✅ Docker image builds
+-  Run Foundry tests (107 tests)
+-  Run API tests (35 tests)
+-  Solidity linting (`forge fmt --check`)
+-  Gas report generation (`forge snapshot`)
+-  Docker image builds
 
 ---
 
@@ -249,13 +249,13 @@ docker compose up -d
 ```
 
 The deployment script will:
-1. ✅ Start all Docker services (API, Anvil, Prometheus, Grafana)
-2. ✅ Deploy all smart contracts to Anvil
-3. ✅ Configure contract relationships (roles, addresses)
-4. ✅ Pre-mint USD tokens to test users
-5. ✅ Create compliant test users in UserRegistry
-6. ✅ Execute a complete mint flow demonstration
-7. ✅ Generate `deployments.json` with contract addresses
+1.  Start all Docker services (API, Anvil, Prometheus, Grafana)
+2.  Deploy all smart contracts to Anvil
+3.  Configure contract relationships (roles, addresses)
+4.  Pre-mint USD tokens to test users
+5.  Create compliant test users in UserRegistry
+6.  Execute a complete mint flow demonstration
+7.  Generate `deployments.json` with contract addresses
 
 **Services will be available at:**
 - API: http://localhost:3000
@@ -625,26 +625,26 @@ See [RUNBOOK.md](./docs/RUNBOOK.md#hmac-secret-rotation) for the complete zero-d
 
 ### Smart Contract Security
 
-- ✅ **Reentrancy Protection**: All state-changing functions use `nonReentrant` modifier
-- ✅ **Access Control**: Role-based permissions (ADMIN, EXECUTOR, COMPLIANCE_OFFICER, UPGRADER)
-- ✅ **Upgrade Safety**: UUPS pattern with authorization checks, initialization guards
-- ✅ **Idempotency**: Intent IDs prevent double-execution
-- ✅ **Input Validation**: Amount checks, country code validation, zero-address protection
+-  **Reentrancy Protection**: All state-changing functions use `nonReentrant` modifier
+-  **Access Control**: Role-based permissions (ADMIN, EXECUTOR, COMPLIANCE_OFFICER, UPGRADER)
+-  **Upgrade Safety**: UUPS pattern with authorization checks, initialization guards
+-  **Idempotency**: Intent IDs prevent double-execution
+-  **Input Validation**: Amount checks, country code validation, zero-address protection
 
 ### API Security
 
-- ✅ **HMAC Verification**: SHA-256 HMAC with timing-safe comparison
-- ✅ **Timestamp Freshness**: 5-minute window (from seed.json) prevents replay attacks
-- ✅ **Idempotency Keys**: UUID-based deduplication with 24-hour TTL
-- ✅ **Error Handling**: No sensitive information leaked in error responses
-- ✅ **Input Validation**: Amount limits, country code checks, required field verification
+-  **HMAC Verification**: SHA-256 HMAC with timing-safe comparison
+-  **Timestamp Freshness**: 5-minute window (from seed.json) prevents replay attacks
+-  **Idempotency Keys**: UUID-based deduplication with 24-hour TTL
+-  **Error Handling**: No sensitive information leaked in error responses
+-  **Input Validation**: Amount limits, country code checks, required field verification
 
 ### Operational Security
 
-- ✅ **Secret Management**: All secrets in seed.json or environment variables
-- ✅ **Network Isolation**: Docker network segmentation
-- ✅ **Monitoring**: Comprehensive metrics and alerting
-- ✅ **Audit Trail**: Indexed events for all state changes
+-  **Secret Management**: All secrets in seed.json or environment variables
+-  **Network Isolation**: Docker network segmentation
+-  **Monitoring**: Comprehensive metrics and alerting
+-  **Audit Trail**: Indexed events for all state changes
 
 For complete threat analysis, see [THREAT_MODEL.md](./docs/THREAT_MODEL.md).
 
@@ -704,11 +704,11 @@ For manual testing procedures (retry logic, DLQ processing), see [TESTING.md](./
 GitHub Actions pipeline runs on every push:
 
 ```yaml
-✅ Smart contract tests (Foundry)
-✅ API tests (Node.js)
-✅ Solidity linting (forge fmt)
-✅ Gas report generation
-✅ Docker image builds
+ Smart contract tests (Foundry)
+ API tests (Node.js)
+ Solidity linting (forge fmt)
+ Gas report generation
+ Docker image builds
 ```
 
 All checks must pass before merging. See `.github/workflows/ci.yml` for details.
@@ -816,4 +816,4 @@ For operational issues in production, refer to the on-call procedures in [RUNBOO
 
 **Note**: This system demonstrates production-ready architecture and practices. For live deployment handling real financial transactions, additional legal compliance, security audits, and regulatory approvals are required.
 
-**Status**: ✅ Ready for technical evaluation and live defense.
+**Status**:  Ready for technical evaluation and live defense.

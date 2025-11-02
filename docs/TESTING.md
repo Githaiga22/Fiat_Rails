@@ -212,11 +212,11 @@ Some failure scenarios require external system manipulation that cannot be easil
    ```
 
 **Success Criteria:**
-- ✅ API attempts retries with exponential backoff
-- ✅ Backoff intervals match configured values (691ms initial, 2x multiplier, max 30s)
-- ✅ After 5 failed attempts, item moved to DLQ
-- ✅ Metrics show retry counts incrementing
-- ✅ API remains responsive during retry attempts
+-  API attempts retries with exponential backoff
+-  Backoff intervals match configured values (691ms initial, 2x multiplier, max 30s)
+-  After 5 failed attempts, item moved to DLQ
+-  Metrics show retry counts incrementing
+-  API remains responsive during retry attempts
 
 ---
 
@@ -285,9 +285,9 @@ Some failure scenarios require external system manipulation that cannot be easil
    echo "Expected: $EXPECTED"
 
    if [ "$FINAL_BALANCE" = "$EXPECTED" ]; then
-       echo "✅ Mint successful!"
+       echo " Mint successful!"
    else
-       echo "❌ Balance mismatch"
+       echo " Balance mismatch"
    fi
    ```
 
@@ -305,11 +305,11 @@ Some failure scenarios require external system manipulation that cannot be easil
    - Verify "DLQ Depth" panel shows count decreased
 
 **Success Criteria:**
-- ✅ DLQ item contains all necessary information for replay
-- ✅ Manual replay succeeds after system recovery
-- ✅ On-chain state updated correctly (balance increased)
-- ✅ Idempotency prevents double-minting if replayed twice
-- ✅ Metrics reflect successful replay
+-  DLQ item contains all necessary information for replay
+-  Manual replay succeeds after system recovery
+-  On-chain state updated correctly (balance increased)
+-  Idempotency prevents double-minting if replayed twice
+-  Metrics reflect successful replay
 
 ---
 
@@ -391,11 +391,11 @@ EOF
    ```
 
 **Success Criteria:**
-- ✅ First request returns 201
-- ✅ Duplicate request returns 200 or 409 (not 201)
-- ✅ Only one mint executed on-chain
-- ✅ Idempotency key stored in database with TTL
-- ✅ After TTL (24h), same key can be reused
+-  First request returns 201
+-  Duplicate request returns 200 or 409 (not 201)
+-  Only one mint executed on-chain
+-  Idempotency key stored in database with TTL
+-  After TTL (24h), same key can be reused
 
 ---
 
@@ -485,9 +485,9 @@ EOF
    echo "Final balance: $FINAL_BALANCE"
 
    if [ "$FINAL_BALANCE" = "$INITIAL_BALANCE" ]; then
-       echo "✅ Compliance check working! Non-compliant user did not receive tokens"
+       echo " Compliance check working! Non-compliant user did not receive tokens"
    else
-       echo "❌ SECURITY ISSUE: Non-compliant user received tokens!"
+       echo " SECURITY ISSUE: Non-compliant user received tokens!"
    fi
    ```
 
@@ -498,11 +498,11 @@ EOF
     ```
 
 **Success Criteria:**
-- ✅ Intent submission accepted (compliance checked at execution, not submission)
-- ✅ Callback processed but mint failed
-- ✅ Non-compliant user balance unchanged
-- ✅ Logs show compliance check failure
-- ✅ Metrics show failed mint attempt
+-  Intent submission accepted (compliance checked at execution, not submission)
+-  Callback processed but mint failed
+-  Non-compliant user balance unchanged
+-  Logs show compliance check failure
+-  Metrics show failed mint attempt
 
 ---
 

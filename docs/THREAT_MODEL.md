@@ -11,8 +11,8 @@
 This document identifies attack surfaces in the FiatRails system and documents mitigations.
 
 **Risk Rating:**
-- 🔴 **Critical:** Direct loss of funds or total system compromise
-- 🟡 **High:** Significant degradation or partial fund loss
+-  **Critical:** Direct loss of funds or total system compromise
+-  **High:** Significant degradation or partial fund loss
 - 🟠 **Medium:** Service disruption or data corruption
 - 🟢 **Low:** Minor inconvenience or information disclosure
 
@@ -20,7 +20,7 @@ This document identifies attack surfaces in the FiatRails system and documents m
 
 ## 1. Smart Contract Threats
 
-### T-001: Reentrancy Attack 🔴
+### T-001: Reentrancy Attack 
 
 **Attack Vector:**
 Malicious contract calls back into MintEscrow during token transfer, potentially double-minting.
@@ -58,7 +58,7 @@ function executeMint(bytes32 intentId) external nonReentrant {
 
 ---
 
-### T-002: Upgrade Bricking 🔴
+### T-002: Upgrade Bricking 
 
 **Attack Vector:**
 Deploying a broken implementation contract that can't be upgraded further, permanently locking funds.
@@ -90,7 +90,7 @@ function _authorizeUpgrade(address newImplementation)
 
 ---
 
-### T-003: Role Escalation 🔴
+### T-003: Role Escalation 
 
 **Attack Vector:**
 Unauthorized user gains ADMIN or UPGRADER role, allowing them to pause system or steal funds via malicious upgrade.
@@ -122,7 +122,7 @@ function grantRole(bytes32 role, address account)
 
 ---
 
-### T-004: Front-Running / MEV 🟡
+### T-004: Front-Running / MEV 
 
 **Attack Vector:**
 Searchers see compliance approval transaction and front-run with mint, or sandwich compliance updates.
@@ -140,7 +140,7 @@ Searchers see compliance approval transaction and front-run with mint, or sandwi
 
 ---
 
-### T-005: Signature Replay (On-Chain) 🟡
+### T-005: Signature Replay (On-Chain) 
 
 **Attack Vector:**
 If permits or signed messages used, replay on different chains or after nonce increment.
@@ -178,7 +178,7 @@ Arithmetic operations overflow, causing incorrect balances.
 
 ## 2. API Threats
 
-### T-101: HMAC Signature Forgery 🔴
+### T-101: HMAC Signature Forgery 
 
 **Attack Vector:**
 Attacker guesses or brute-forces HMAC secret, forges valid requests to drain funds.
@@ -214,7 +214,7 @@ function verifyHMAC(request, secret) {
 
 ---
 
-### T-102: Replay Attacks (Webhook) 🟡
+### T-102: Replay Attacks (Webhook) 
 
 **Attack Vector:**
 Attacker captures M-PESA webhook payload and replays it multiple times to mint repeatedly.
@@ -266,7 +266,7 @@ Two different operations hash to same idempotency key, causing wrong response re
 
 ---
 
-### T-104: Nonce Griefing 🟡
+### T-104: Nonce Griefing 
 
 **Attack Vector:**
 Attacker front-runs your transaction with higher gas, incrementing nonce and causing `nonce too low` errors in your service.
@@ -322,7 +322,7 @@ Malicious RPC provider censors transactions or returns false data.
 
 ---
 
-### T-106: SQL Injection 🟡
+### T-106: SQL Injection 
 
 **Attack Vector:**
 User-controlled input in SQL query allows data exfiltration or corruption.
@@ -355,7 +355,7 @@ const result = await db.query(
 
 ## 3. Operational Threats
 
-### T-201: Private Key Leakage 🔴
+### T-201: Private Key Leakage 
 
 **Attack Vector:**
 Private key for transaction signing committed to Git, leaked in logs, or stolen from server.
@@ -375,7 +375,7 @@ Private key for transaction signing committed to Git, leaked in logs, or stolen 
 
 ---
 
-### T-202: Docker Image Backdoor 🔴
+### T-202: Docker Image Backdoor 
 
 **Attack Vector:**
 Malicious base image or dependency contains backdoor that exfiltrates keys.
@@ -403,7 +403,7 @@ FROM node:latest
 
 ---
 
-### T-203: Chain Reorganization (Reorg) 🟡
+### T-203: Chain Reorganization (Reorg) 
 
 **Attack Vector:**
 Chain reorgs after you've marked a mint as executed, leading to double-mint.
@@ -444,7 +444,7 @@ Attacker floods API with requests, exhausting resources.
 
 ## 4. Compliance & Business Logic Threats
 
-### T-301: Compliance Bypass 🔴
+### T-301: Compliance Bypass 
 
 **Attack Vector:**
 User with high risk score bypasses check and mints tokens.
@@ -474,7 +474,7 @@ function executeMint(bytes32 intentId) external {
 
 ---
 
-### T-302: Attestation Forgery 🟡
+### T-302: Attestation Forgery 
 
 **Attack Vector:**
 User provides fake attestation hash (e.g., hash of random data).
@@ -551,14 +551,14 @@ Reentrancy Upgrade                HMAC     Key
 
 | Threat ID | Category | Severity | Mitigation Status |
 |-----------|----------|----------|-------------------|
-| T-001 | Reentrancy | 🔴 | Mitigated |
-| T-002 | Upgrade Brick | 🔴 | Mitigated |
-| T-003 | Role Escalation | 🔴 | Mitigated |
-| T-101 | HMAC Forgery | 🔴 | Mitigated |
-| T-102 | Replay Attack | 🟡 | Mitigated |
-| T-201 | Key Leakage | 🔴 | Mitigated |
-| T-203 | Chain Reorg | 🟡 | Partially (needs confirmation depth) |
-| T-301 | Compliance Bypass | 🔴 | Mitigated |
+| T-001 | Reentrancy |  | Mitigated |
+| T-002 | Upgrade Brick |  | Mitigated |
+| T-003 | Role Escalation |  | Mitigated |
+| T-101 | HMAC Forgery |  | Mitigated |
+| T-102 | Replay Attack |  | Mitigated |
+| T-201 | Key Leakage |  | Mitigated |
+| T-203 | Chain Reorg |  | Partially (needs confirmation depth) |
+| T-301 | Compliance Bypass |  | Mitigated |
 
 ---
 

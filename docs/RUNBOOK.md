@@ -66,7 +66,7 @@ rate(fiatrails_mint_intents_total[5m])
 
 ## Alert Response Procedures
 
-### 🔴 CRITICAL: HighRPCErrorRate
+###  CRITICAL: HighRPCErrorRate
 
 **Alert:** RPC error rate > 10% for 2+ minutes
 
@@ -105,7 +105,7 @@ curl http://localhost:9090/api/v1/query?query=fiatrails_rpc_errors_total
 
 ---
 
-### 🔴 CRITICAL: DLQGrowing
+###  CRITICAL: DLQGrowing
 
 **Alert:** DLQ has > 10 items for 5+ minutes
 
@@ -143,7 +143,7 @@ docker logs fiatrails-api | grep -i "dlq" | tail -50
 
 ---
 
-### 🟡 WARNING: SlowRPCCalls
+###  WARNING: SlowRPCCalls
 
 **Alert:** p95 RPC latency > 2s for 5+ minutes
 
@@ -166,7 +166,7 @@ cast block-number --rpc-url $RPC_URL
 
 ---
 
-### 🟡 WARNING: NoSuccessfulMints
+###  WARNING: NoSuccessfulMints
 
 **Alert:** Zero successful mints in 10 minutes
 
@@ -608,8 +608,8 @@ docker compose logs api
 | Security | security@fiatrails.io | 24/7 |
 
 **Incident Severity:**
-- 🔴 **P0:** Service down, funds at risk → Page immediately
-- 🟡 **P1:** Degraded service → Page during business hours
+-  **P0:** Service down, funds at risk → Page immediately
+-  **P1:** Degraded service → Page during business hours
 - 🟢 **P2:** Minor issue → Create ticket
 
 ---
