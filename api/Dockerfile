@@ -6,6 +6,9 @@ FROM node:22-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
+# Install build dependencies for native modules (better-sqlite3)
+RUN apk add --no-cache python3 make g++
+
 # Copy package files
 COPY package.json package-lock.json* ./
 
@@ -15,6 +18,9 @@ RUN npm ci
 # Production image
 FROM base AS runner
 WORKDIR /app
+
+# Install runtime dependencies for better-sqlite3
+RUN apk add --no-cache libstdc++
 
 # Don't run as root
 RUN addgroup --system --gid 1001 nodejs
