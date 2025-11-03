@@ -417,7 +417,6 @@ EOF
    cast send $USER_REGISTRY "updateUser(address,uint8,bytes32,bool)" \
      $NON_COMPLIANT_USER $RISK_SCORE $ATTESTATION true \
      --rpc-url http://localhost:8545 \
-     --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
    ```
 
 2. **Verify user is non-compliant:**
@@ -433,7 +432,6 @@ EOF
 
    cast send $USD_STABLECOIN "mint(address,uint256)" $NON_COMPLIANT_USER $MINT_AMOUNT \
      --rpc-url http://localhost:8545 \
-     --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
    ```
 
 4. **Approve MintEscrow:**
@@ -743,27 +741,3 @@ curl http://localhost:3000/health
 ```
 
 ---
-
-## Test Metrics Tracking
-
-Track test execution metrics over time:
-
-| Date | Contract Tests | API Tests | E2E Tests | Coverage | Duration |
-|------|---------------|-----------|-----------|----------|----------|
-| 2025-11-02 | 107 passing | 35 passing | 12 passing | 94.26% | 8.2s |
-
----
-
-## Future Testing Enhancements
-
-- [ ] Add chaos engineering tests (random failures)
-- [ ] Implement contract invariant testing
-- [ ] Add property-based testing for edge cases
-- [ ] Create automated DLQ replay integration
-- [ ] Add performance regression testing
-- [ ] Implement synthetic monitoring in production
-
----
-
-**Maintained by:** [Your Name]
-**Last Review:** 2025-11-02
