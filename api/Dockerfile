@@ -7,7 +7,12 @@ FROM base AS deps
 WORKDIR /app
 
 # Install build dependencies for native modules (better-sqlite3)
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    gcc \
+    libc-dev
 
 # Copy package files
 COPY package.json package-lock.json* ./
