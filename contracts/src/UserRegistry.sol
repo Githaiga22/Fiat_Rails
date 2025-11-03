@@ -40,10 +40,7 @@ contract UserRegistry is IUserRegistry, AccessControl {
         }
 
         users[user] = UserCompliance({
-            riskScore: riskScore,
-            attestationHash: attestationHash,
-            lastUpdated: block.timestamp,
-            isVerified: isVerified
+            riskScore: riskScore, attestationHash: attestationHash, lastUpdated: block.timestamp, isVerified: isVerified
         });
 
         emit UserComplianceUpdated(user, riskScore, attestationHash, isVerified);
