@@ -806,8 +806,10 @@ Built with industry-standard tools and libraries:
 
 ## Contact & Support
 
-**Developer**: Robinson Githaiga Munene
-**Email**: [Your Email]
+**Developer**: Allan Robinson 
+
+**Email**: [allan](allangithaiga5@gmail.com) 
+
 **GitHub**: [@Githaiga22](https://github.com/Githaiga22)
 
 For operational issues in production, refer to the on-call procedures in [RUNBOOK.md](./docs/RUNBOOK.md#emergency-contacts).

@@ -1,7 +1,9 @@
 # Architecture Decision Records
 
-**Candidate:** [Your Candidate ID]  
-**Date:** [Submission Date]  
+**Candidate:** Allan Robinson
+
+**Date:** 2025/11/02
+
 **Version:** 1.0
 
 ---
@@ -294,6 +296,6 @@ API needs persistent storage for idempotency keys and DLQ.
 
 ---
 
-**Signed:** [Your Name]  
-**Date:** [Date]
+**Signed:** Allan Robinson
+**Date:** 2025/11/02
 
