@@ -1,19 +1,17 @@
 
 # Multi-stage build for FiatRails API Service
-FROM node:22-alpine AS base
+FROM node:22-slim AS base
 
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
 
 # Install build dependencies for native modules (better-sqlite3)
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
-    gcc \
-    libc-dev \
-    sqlite-dev
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package.json package-lock.json* ./
@@ -25,14 +23,11 @@ RUN npm ci
 FROM base AS runner
 WORKDIR /app
 
-# Install runtime dependencies for better-sqlite3
-RUN apk add --no-cache \
-    libstdc++ \
-    sqlite-libs
+# No additional runtime dependencies needed for Debian
 
 # Don't run as root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 fiatrails
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 -g nodejs fiatrails
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
