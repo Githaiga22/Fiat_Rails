@@ -1,7 +1,6 @@
 # Threat Model
 
-**Candidate:** [Your Candidate ID]  
-**Date:** [Submission Date]  
+**Candidate:** Githaiga22  
 **Version:** 1.0
 
 ---
@@ -13,8 +12,8 @@ This document identifies attack surfaces in the FiatRails system and documents m
 **Risk Rating:**
 -  **Critical:** Direct loss of funds or total system compromise
 -  **High:** Significant degradation or partial fund loss
-- 🟠 **Medium:** Service disruption or data corruption
-- 🟢 **Low:** Minor inconvenience or information disclosure
+- **Medium:** Service disruption or data corruption
+- **Low:** Minor inconvenience or information disclosure
 
 ---
 
@@ -133,7 +132,7 @@ Searchers see compliance approval transaction and front-run with mint, or sandwi
 **Mitigation:**
 - Compliance check happens atomically with mint
 - Flashbots/private RPC for sensitive transactions (production)
-- 🔄 Alternative: Commit-reveal for compliance attestations
+- Alternative: Commit-reveal for compliance attestations
 
 **Testing:**
 - Simulate front-running in test (fork mode)
@@ -159,7 +158,7 @@ If permits or signed messages used, replay on different chains or after nonce in
 
 ---
 
-### T-006: Integer Overflow/Underflow 🟢
+### T-006: Integer Overflow/Underflow 
 
 **Attack Vector:**
 Arithmetic operations overflow, causing incorrect balances.
@@ -247,7 +246,7 @@ function validateTimestamp(timestamp) {
 
 ---
 
-### T-103: Idempotency Key Collision 🟠
+### T-103: Idempotency Key Collision 
 
 **Attack Vector:**
 Two different operations hash to same idempotency key, causing wrong response returned.
@@ -302,7 +301,7 @@ async function sendTransaction(tx) {
 
 ---
 
-### T-105: RPC Endpoint Denial of Service 🟠
+### T-105: RPC Endpoint Denial of Service 
 
 **Attack Vector:**
 Malicious RPC provider censors transactions or returns false data.
@@ -314,7 +313,7 @@ Malicious RPC provider censors transactions or returns false data.
 - Fallback RPC endpoints
 - Health checks on RPC (measure latency, block lag)
 - Circuit breaker pattern
-- 🔄 Future: Run own node
+- Future: Run own node
 
 **Testing:**
 - Simulate RPC timeout
@@ -422,7 +421,7 @@ Chain reorgs after you've marked a mint as executed, leading to double-mint.
 
 ---
 
-### T-204: Denial of Service (Rate Limiting) 🟠
+### T-204: Denial of Service (Rate Limiting) 
 
 **Attack Vector:**
 Attacker floods API with requests, exhausting resources.
@@ -486,7 +485,7 @@ User provides fake attestation hash (e.g., hash of random data).
 - Attestation hash is hash of signed ZK proof or doc
 - On-chain: only verify hash existence (not content)
 - Off-chain: compliance officer verifies original doc
-- 🔄 Future: ZK proofs for privacy-preserving KYC
+- Future: ZK proofs for privacy-preserving KYC
 
 **Testing:**
 - Bogus hash doesn't grant compliance (must be set by admin)
@@ -495,7 +494,7 @@ User provides fake attestation hash (e.g., hash of random data).
 
 ## 5. Dependency Threats
 
-### T-401: Vulnerable Dependencies 🟠
+### T-401: Vulnerable Dependencies 
 
 **Attack Vector:**
 NPM/cargo package with known vulnerability (e.g., prototype pollution).
@@ -562,6 +561,6 @@ Reentrancy Upgrade                HMAC     Key
 
 ---
 
-**Signed:** [Your Name]  
-**Date:** [Date]
+**Signed:** Githaiga22  
+**Date:** 03/11/2025
 
