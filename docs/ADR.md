@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-**Candidate:** Githaiga
+**Candidate:** Githaiga22
 
 **Date:** 2025-11-02
 
@@ -666,5 +666,6 @@ error Unauthorized();  // vs require(condition, "Unauthorized")
 
 ---
 
-**Signed:** Githaiga
+**Signed:** Githaiga22
+
 **Date:** 2025-11-02
