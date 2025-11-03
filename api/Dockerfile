@@ -12,7 +12,8 @@ RUN apk add --no-cache \
     make \
     g++ \
     gcc \
-    libc-dev
+    libc-dev \
+    sqlite-dev
 
 # Copy package files
 COPY package.json package-lock.json* ./
@@ -25,7 +26,9 @@ FROM base AS runner
 WORKDIR /app
 
 # Install runtime dependencies for better-sqlite3
-RUN apk add --no-cache libstdc++
+RUN apk add --no-cache \
+    libstdc++ \
+    sqlite-libs
 
 # Don't run as root
 RUN addgroup --system --gid 1001 nodejs
