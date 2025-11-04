@@ -63,8 +63,27 @@ router.post('/callbacks/mpesa', async (req, res) => {
       });
     }
 
-    // Check user compliance before executing
-    const isCompliant = await checkCompliance(userAddress);
+    // Check user compliance before executing (with retry on failure)
+    let isCompliant;
+    try {
+      isCompliant = await checkCompliance(userAddress);
+    } catch (error) {
+      // RPC failure during compliance check - add to retry queue
+      console.error('Failed to check compliance:', error.message);
+
+      addToRetryQueue(intentId, 'execute', {
+        intentId,
+        txRef,
+        userAddress,
+        amount,
+      });
+
+      return res.status(202).json({
+        status: 'queued',
+        message: 'Compliance check failed, queued for retry',
+        intentId,
+      });
+    }
 
     if (!isCompliant) {
       console.log(`User ${userAddress} is not compliant, skipping mint execution`);
