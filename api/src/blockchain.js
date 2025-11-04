@@ -89,12 +89,22 @@ export async function submitMintIntent(amount, countryCode, txRef) {
 
   const receipt = await tx.wait();
 
-  // Extract intentId from event
-  const event = receipt.logs.find(
-    (log) => log.topics[0] === ethers.id('MintIntentSubmitted(bytes32,address,uint256,bytes32,bytes32)')
-  );
+  // Extract intentId from event using contract interface
+  const mintEscrowInterface = contracts.mintEscrow.interface;
+  let intentId = null;
 
-  const intentId = event?.topics[1];
+  for (const log of receipt.logs) {
+    try {
+      const parsedLog = mintEscrowInterface.parseLog(log);
+      if (parsedLog && parsedLog.name === 'MintIntentSubmitted') {
+        intentId = parsedLog.args[0]; // intentId is the first argument
+        break;
+      }
+    } catch (e) {
+      // Skip logs that don't match our interface
+      continue;
+    }
+  }
 
   return { intentId, txHash: receipt.hash };
 }
