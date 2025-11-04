@@ -8,5 +8,5 @@
   "network": "anvil-local",
   "chainId": 31382,
   "rpcUrl": "http://localhost:8545",
-  "timestamp": 1762256881
+  "timestamp": 1762259547
 }
