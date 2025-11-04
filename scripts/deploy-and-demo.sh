@@ -42,8 +42,8 @@ echo "✅ Prerequisites met"
 echo ""
 
 # Start services
-echo "🚀 Starting services with docker compose..."
-docker compose up -d
+echo "🚀 Starting services with docker-compose..."
+sudo docker-compose up -d
 
 echo ""
 echo "⏳ Waiting for services to be healthy..."
@@ -80,17 +80,18 @@ echo ""
 
 # Deploy contracts
 echo "Deploying contracts to Anvil..."
+export PRIVATE_KEY=$DEPLOYER_KEY
 forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --private-key $DEPLOYER_KEY --broadcast --silent
 
 # Extract deployed addresses from broadcast folder
 BROADCAST_FILE=$(ls -t broadcast/Deploy.s.sol/31382/run-latest.json 2>/dev/null | head -1)
 
 if [ -f "$BROADCAST_FILE" ]; then
-    USD_STABLECOIN=$(jq -r '.transactions[] | select(.contractName == "USDStablecoin") | .contractAddress' "$BROADCAST_FILE")
-    COUNTRY_TOKEN=$(jq -r '.transactions[] | select(.contractName == "CountryToken") | .contractAddress' "$BROADCAST_FILE")
-    USER_REGISTRY=$(jq -r '.transactions[] | select(.contractName == "UserRegistry") | .contractAddress' "$BROADCAST_FILE")
+    USD_STABLECOIN=$(jq -r '.transactions[] | select(.contractName == "USDStablecoin") | .contractAddress' "$BROADCAST_FILE" | head -1)
+    COUNTRY_TOKEN=$(jq -r '.transactions[] | select(.contractName == "CountryToken") | .contractAddress' "$BROADCAST_FILE" | head -1)
+    USER_REGISTRY=$(jq -r '.transactions[] | select(.contractName == "UserRegistry") | .contractAddress' "$BROADCAST_FILE" | head -1)
     COMPLIANCE_MANAGER=$(jq -r '.transactions[] | select(.contractName == "ERC1967Proxy") | .contractAddress' "$BROADCAST_FILE" | head -1)
-    MINT_ESCROW=$(jq -r '.transactions[] | select(.contractName == "MintEscrow") | .contractAddress' "$BROADCAST_FILE")
+    MINT_ESCROW=$(jq -r '.transactions[] | select(.contractName == "MintEscrow") | .contractAddress' "$BROADCAST_FILE" | head -1)
 
     echo "Deployed addresses:"
     echo "  USDStablecoin: $USD_STABLECOIN"
@@ -201,6 +202,6 @@ echo "  - Check API health: http://localhost:3000/health"
 echo "  - View API metrics: http://localhost:3000/metrics"
 echo ""
 echo "To stop:"
-echo "  docker compose down"
+echo "  sudo docker-compose down"
 echo ""
 
