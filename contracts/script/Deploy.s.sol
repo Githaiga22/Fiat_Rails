@@ -94,37 +94,7 @@ contract Deploy is Script {
         console.log("ComplianceManager:", address(complianceManager));
         console.log("MintEscrow:", address(mintEscrow));
 
-        // 9. Write deployment addresses to JSON file
-        console.log("\n9. Writing deployments.json...");
-        string memory json = string.concat(
-            "{\n",
-            '  "deployer": "',
-            vm.toString(deployer),
-            '",\n',
-            '  "usdStablecoin": "',
-            vm.toString(address(usdStablecoin)),
-            '",\n',
-            '  "countryToken": "',
-            vm.toString(address(countryToken)),
-            '",\n',
-            '  "userRegistry": "',
-            vm.toString(address(userRegistry)),
-            '",\n',
-            '  "complianceManager": "',
-            vm.toString(address(complianceManager)),
-            '",\n',
-            '  "mintEscrow": "',
-            vm.toString(address(mintEscrow)),
-            '",\n',
-            '  "network": "lisk-sepolia",\n',
-            '  "chainId": 4202,\n',
-            '  "timestamp": ',
-            vm.toString(block.timestamp),
-            "\n",
-            "}"
-        );
-
-        vm.writeFile("../deployments.json", json);
-        console.log("Deployment addresses saved to deployments.json");
+        // Note: deployments.json will be created by the deployment script
+        // from the broadcast files to avoid filesystem access restrictions
     }
 }
