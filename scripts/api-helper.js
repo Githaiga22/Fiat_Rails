@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { ethers } from 'ethers';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,8 +21,18 @@ const seedPath = join(__dirname, '..', 'seed.json');
 const seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
 
 const API_BASE_URL = process.env.API_URL || 'http://localhost:3000';
+const RPC_URL = process.env.RPC_URL || 'http://localhost:8545';
 const HMAC_SECRET = seed.secrets.hmacSalt;
-const WEBHOOK_SECRET = seed.secrets.webhookSecret;
+const WEBHOOK_SECRET = seed.secrets.mpesaWebhookSecret;
+
+// Load deployments
+const deploymentsPath = join(__dirname, '..', 'deployments.json');
+let deployments;
+try {
+  deployments = JSON.parse(fs.readFileSync(deploymentsPath, 'utf8'));
+} catch (e) {
+  deployments = null;
+}
 
 /**
  * Generate HMAC signature for API request
@@ -45,16 +56,18 @@ function generateHmac(payload, timestamp, secret) {
  * @returns {Promise<Object>} API response
  */
 export async function submitMintIntent({ userAddress, amount, transactionRef, idempotencyKey }) {
-  const timestamp = Math.floor(Date.now() / 1000);
+  const timestamp = Date.now(); // Milliseconds
   const body = {
-    userId: userAddress,
+    userAddress: userAddress,
     amount: amount,
     countryCode: seed.tokens.country.countryCode,
-    transactionRef: transactionRef
+    txRef: transactionRef
   };
 
   const payload = JSON.stringify(body);
-  const signature = generateHmac(payload, timestamp, HMAC_SECRET);
+  // Match the API's HMAC format: JSON.stringify(payload) + timestamp
+  const message = payload + timestamp.toString();
+  const signature = crypto.createHmac('sha256', HMAC_SECRET).update(message).digest('hex');
 
   const headers = {
     'Content-Type': 'application/json',
@@ -79,24 +92,79 @@ export async function submitMintIntent({ userAddress, amount, transactionRef, id
 }
 
 /**
+ * Look up intentId from blockchain by txRef
+ * @param {string} txRef - Transaction reference
+ * @returns {Promise<string|null>} intentId or null if not found
+ */
+export async function getIntentIdByTxRef(txRef) {
+  if (!deployments || !deployments.mintEscrow) {
+    console.warn('No deployments.json found - cannot query blockchain');
+    return null;
+  }
+
+  const provider = new ethers.JsonRpcProvider(RPC_URL);
+  const mintEscrow = new ethers.Contract(
+    deployments.mintEscrow,
+    [
+      'event MintIntentSubmitted(bytes32 indexed intentId, address indexed user, uint256 amount, bytes32 indexed countryCode, bytes32 txRef)',
+    ],
+    provider
+  );
+
+  // Query for MintIntentSubmitted events with matching txRef
+  const txRefBytes32 = ethers.encodeBytes32String(txRef);
+
+  // Get events from the last 10000 blocks (adjust as needed)
+  const currentBlock = await provider.getBlockNumber();
+  const fromBlock = Math.max(0, currentBlock - 10000);
+
+  const filter = mintEscrow.filters.MintIntentSubmitted();
+  const events = await mintEscrow.queryFilter(filter, fromBlock, currentBlock);
+
+  // Find event with matching txRef
+  for (const event of events) {
+    const eventTxRef = event.args[4]; // txRef is the 5th parameter (0-indexed)
+    if (eventTxRef === txRefBytes32) {
+      return event.args[0]; // intentId is the first parameter
+    }
+  }
+
+  return null;
+}
+
+/**
  * Trigger M-PESA webhook callback
  * @param {Object} params
  * @param {string} params.transactionRef - Transaction reference from mint intent
  * @param {string} params.userAddress - User's Ethereum address
  * @param {string} params.amount - Amount in wei (as string)
+ * @param {string} params.intentId - Optional intentId (will be looked up if not provided)
  * @returns {Promise<Object>} API response
  */
-export async function triggerMpesaCallback({ transactionRef, userAddress, amount }) {
+export async function triggerMpesaCallback({ transactionRef, userAddress, amount, intentId }) {
   const timestamp = Math.floor(Date.now() / 1000);
+
+  // Look up intentId from blockchain if not provided
+  if (!intentId) {
+    console.log(`Looking up intentId for txRef: ${transactionRef}...`);
+    intentId = await getIntentIdByTxRef(transactionRef);
+    if (!intentId) {
+      throw new Error(`No intent found for txRef: ${transactionRef}. Did you submit-intent first?`);
+    }
+    console.log(`Found intentId: ${intentId}`);
+  }
+
   const body = {
-    transactionRef: transactionRef,
-    amount: amount,
-    userId: userAddress,
-    timestamp: timestamp * 1000 // milliseconds for webhook
+    intentId: intentId,
+    txRef: transactionRef,
+    userAddress: userAddress,
+    amount: amount
   };
 
   const payload = JSON.stringify(body);
-  const signature = generateHmac(payload, timestamp, WEBHOOK_SECRET);
+  // Match the API's HMAC format: JSON.stringify(payload) + timestamp
+  const message = payload + timestamp.toString();
+  const signature = crypto.createHmac('sha256', WEBHOOK_SECRET).update(message).digest('hex');
 
   const headers = {
     'Content-Type': 'application/json',
