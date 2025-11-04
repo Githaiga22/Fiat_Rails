@@ -1,12 +1,12 @@
 {
-  "deployer": "0x4B359D10c05b8615B437AA76bD4A5aEef4FdDE9F",
-  "usdStablecoin": "0xEc2B9dde309737CCaeC137939aCb4f8524876D1d",
-  "countryToken": "0x0c6575E7C5537EE3a5B6c39a623e6C1BE220f190",
-  "userRegistry": "0x7Ccd2f5eA5BAfC044019e61cd0Cb827DCfdC595D",
-  "complianceManager": "0x4E5bF49866d88D7DD36Ba10D091Efe383e70C12E",
-  "mintEscrow": "0xEb95f8fD9B1b062F2eDCfde500F6A1d78274cb58",
-  "network": "lisk-sepolia",
-  "chainId": 4202,
-  "rpcUrl": "https://rpc.sepolia-api.lisk.com",
-  "timestamp": 1762032638
+  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "usdStablecoin": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  "countryToken": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+  "userRegistry": "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+  "complianceManager": "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9",
+  "mintEscrow": "0x5fc8d32690cc91d4c39d9d3abcbd16989f875707",
+  "network": "anvil-local",
+  "chainId": 31382,
+  "rpcUrl": "http://localhost:8545",
+  "timestamp": 1762256881
 }
