@@ -35,6 +35,9 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy application source
 COPY --chown=fiatrails:nodejs . .
 
+# Create data directory for SQLite and DLQ with correct permissions
+RUN mkdir -p /app/data && chown -R fiatrails:nodejs /app/data
+
 # Switch to non-root user
 USER fiatrails
 
